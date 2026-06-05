@@ -1,0 +1,76 @@
+{
+  "items": [
+    {
+      "id": "sword_001",
+      "name": "铁剑",
+      "type": "weapon",
+      "attack": 10,
+      "defense": 0,
+      "price": 100,
+      "description": "普通的铁剑，适合新手使用"
+    },
+    {
+      "id": "sword_002",
+      "name": "钢剑",
+      "type": "weapon",
+      "attack": 20,
+      "defense": 0,
+      "price": 300,
+      "description": "坚固的钢剑，攻击力较强"
+    },
+    {
+      "id": "sword_003",
+      "name": "烈焰剑",
+      "type": "weapon",
+      "attack": 35,
+      "defense": 0,
+      "price": 800,
+      "description": "带有火焰力量的魔法剑"
+    },
+    {
+      "id": "armor_001",
+      "name": "皮甲",
+      "type": "armor",
+      "attack": 0,
+      "defense": 5,
+      "price": 80,
+      "description": "轻便的皮革护甲"
+    },
+    {
+      "id": "armor_002",
+      "name": "锁子甲",
+      "type": "armor",
+      "attack": 0,
+      "defense": 12,
+      "price": 250,
+      "description": "由金属环编织的护甲"
+    },
+    {
+      "id": "armor_003",
+      "name": "板甲",
+      "type": "armor",
+      "attack": 0,
+      "defense": 25,
+      "price": 600,
+      "description": "厚重的全身板甲"
+    },
+    {
+      "id": "potion_001",
+      "name": "小型生命药水",
+      "type": "consumable",
+      "attack": 0,
+      "defense": 0,
+      "price": 20,
+      "description": "恢复30点生命值"
+    },
+    {
+      "id": "potion_002",
+      "name": "大型生命药水",
+      "type": "consumable",
+      "attack": 0,
+      "defense": 0,
+      "price": 50,
+      "description": "恢复80点生命值"
+    }
+  ]
+}

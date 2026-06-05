@@ -1,0 +1,26 @@
+# 构建输出
+build/
+bin/
+*.o
+*.obj
+
+# Qt 生成文件
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+Makefile*
+.qmake.stash
+
+# IDE 配置
+*.pro.user
+*.pro.user.*
+*.autosave
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 临时文件
+*.log
+*.tmp
+*.bak
