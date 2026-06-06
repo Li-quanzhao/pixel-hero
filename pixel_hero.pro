@@ -1,4 +1,4 @@
-QT       += core gui widgets multimedia
+QT       += core gui widgets
 
 TARGET = pixel_hero
 TEMPLATE = app
@@ -28,7 +28,8 @@ SOURCES += \
     src/ui/Inventory.cpp \
     src/utils/AnimationManager.cpp \
     src/utils/ResourceManager.cpp \
-    src/utils/GameData.cpp
+    src/utils/GameData.cpp \
+    src/utils/SaveManager.cpp
 
 HEADERS += \
     src/GameWindow.h \
@@ -50,7 +51,8 @@ HEADERS += \
     src/ui/Inventory.h \
     src/utils/AnimationManager.h \
     src/utils/ResourceManager.h \
-    src/utils/GameData.h
+    src/utils/GameData.h \
+    src/utils/SaveManager.h
 
 RESOURCES += \
     resources.qrc

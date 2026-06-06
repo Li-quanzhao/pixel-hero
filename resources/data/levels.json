@@ -6,29 +6,47 @@
       "width": 32,
       "height": 24,
       "tileset": "village.png",
-      "spawn_point": {"x": 16, "y": 12},
-      "enemies": ["goblin", "slime"],
-      "npcs": ["blacksmith", "shopkeeper", "villager"]
-    },
-    {
-      "id": "level_2",
-      "name": "幽暗森林",
-      "width": 48,
-      "height": 32,
-      "tileset": "forest.png",
-      "spawn_point": {"x": 24, "y": 16},
-      "enemies": ["goblin", "skeleton"],
-      "npcs": ["quest_giver", "villager"]
-    },
-    {
-      "id": "level_3",
-      "name": "熔岩洞穴",
-      "width": 40,
-      "height": 28,
-      "tileset": "cave.png",
-      "spawn_point": {"x": 20, "y": 14},
-      "enemies": ["skeleton", "boss"],
-      "npcs": []
+      "spawn_point": {"x": 4, "y": 4},
+      "tile_map": [
+        "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFGGGGFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFGGGGFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFGGGGFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFWWWWWWFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFWFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFWWWWWWWWFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFWFFFFFFWFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFWWWWWWWWFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+      ],
+      "enemies": ["goblin", "goblin", "slime", "slime", "slime"],
+      "enemy_positions": [
+        {"x": 10, "y": 8},
+        {"x": 20, "y": 12},
+        {"x": 15, "y": 5},
+        {"x": 8, "y": 17},
+        {"x": 25, "y": 8}
+      ],
+      "npcs": ["blacksmith", "shopkeeper", "quest_giver"],
+      "npc_positions": [
+        {"x": 12, "y": 10},
+        {"x": 15, "y": 10},
+        {"x": 20, "y": 20}
+      ]
     }
   ]
 }

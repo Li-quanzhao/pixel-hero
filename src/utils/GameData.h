@@ -9,6 +9,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QList>
+#include <QVector>
 
 class GameData : public QObject
 {
@@ -22,8 +23,11 @@ public:
         int height;
         QString tileset;
         QPoint spawnPoint;
+        QStringList tileMap;
         QStringList enemies;
+        QList<QPoint> enemyPositions;
         QStringList npcs;
+        QList<QPoint> npcPositions;
     };
 
     struct ItemData {

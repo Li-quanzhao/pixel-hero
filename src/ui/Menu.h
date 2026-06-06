@@ -26,8 +26,17 @@ public:
     void hide();
     bool isVisible() const;
 
+    // 键盘操作
+    void selectPrevious();
+    void selectNext();
+    void confirmSelection();
+
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+
+    // 鼠标事件
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
 
 signals:
     void startGame();
@@ -41,6 +50,16 @@ private:
     bool m_isVisible;
     QList<QString> m_menuItems;
     int m_selectedIndex;
+
+    // 菜单布局参数
+    const int MENU_X = 300;
+    const int MENU_Y = 200;
+    const int MENU_WIDTH = 200;
+    const int MENU_HEIGHT = 40;
+    const int ITEM_SPACING = 10;
+
+    // 获取菜单项的矩形区域
+    QRectF getItemRect(int index) const;
 };
 
 #endif // MENU_H

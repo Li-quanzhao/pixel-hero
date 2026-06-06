@@ -49,14 +49,36 @@ bool GameData::loadLevelData(const QString& path)
         QJsonObject spawnObj = levelObj["spawn_point"].toObject();
         level.spawnPoint = QPoint(spawnObj["x"].toInt(), spawnObj["y"].toInt());
 
+        // 解析瓦片地图
+        QJsonArray tileMapArray = levelObj["tile_map"].toArray();
+        for (const QJsonValue& rowVal : tileMapArray) {
+            level.tileMap.append(rowVal.toString());
+        }
+
+        // 解析敌人
         QJsonArray enemiesArray = levelObj["enemies"].toArray();
         for (const QJsonValue& enemyVal : enemiesArray) {
             level.enemies.append(enemyVal.toString());
         }
 
+        // 解析敌人位置
+        QJsonArray enemyPosArray = levelObj["enemy_positions"].toArray();
+        for (const QJsonValue& posVal : enemyPosArray) {
+            QJsonObject posObj = posVal.toObject();
+            level.enemyPositions.append(QPoint(posObj["x"].toInt(), posObj["y"].toInt()));
+        }
+
+        // 解析 NPC
         QJsonArray npcsArray = levelObj["npcs"].toArray();
         for (const QJsonValue& npcVal : npcsArray) {
             level.npcs.append(npcVal.toString());
+        }
+
+        // 解析 NPC 位置
+        QJsonArray npcPosArray = levelObj["npc_positions"].toArray();
+        for (const QJsonValue& posVal : npcPosArray) {
+            QJsonObject posObj = posVal.toObject();
+            level.npcPositions.append(QPoint(posObj["x"].toInt(), posObj["y"].toInt()));
         }
 
         m_levels.append(level);
@@ -98,15 +120,8 @@ bool GameData::loadItemData(const QString& path)
     return true;
 }
 
-QList<GameData::LevelData> GameData::levels() const
-{
-    return m_levels;
-}
-
-QList<GameData::ItemData> GameData::items() const
-{
-    return m_items;
-}
+QList<GameData::LevelData> GameData::levels() const { return m_levels; }
+QList<GameData::ItemData> GameData::items() const { return m_items; }
 
 GameData::LevelData GameData::getLevelById(const QString& id)
 {

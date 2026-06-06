@@ -96,9 +96,14 @@ void GameController::processPlayerMovement(QKeyEvent *event, bool isPressed)
     case Qt::Key_Right:
         player->setMoveRight(isPressed);
         break;
+    case Qt::Key_E:
+        if (isPressed) {
+            m_scene->tryInteractNPC();
+        }
+        break;
     case Qt::Key_Space:
         if (isPressed) {
-            player->attack();
+            player->doAttack();
         }
         break;
     default:

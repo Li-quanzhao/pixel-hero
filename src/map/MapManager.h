@@ -6,6 +6,8 @@
 #include <QString>
 #include <QList>
 #include "Tile.h"
+#include "Enemy.h"
+#include "NPC.h"
 
 class QGraphicsScene;
 
@@ -21,18 +23,23 @@ public:
     void renderMap(QGraphicsScene* scene);
     QPointF getPlayerSpawnPoint() const;
     bool checkCollision(QRectF rect);
-    void switchMap(const QString& newMap);
+    QList<Enemy*> getEnemies() const;
+    QList<NPC*> getNPCs() const;
     void update(qreal deltaTime);
 
 private:
     QString m_currentMap;
     QList<QList<Tile*>> m_tiles;
     QPointF m_spawnPoint;
+    QList<Enemy*> m_enemies;
+    QList<NPC*> m_npcs;
     int m_mapWidth;
     int m_mapHeight;
 
     void clearMap();
-    void parseMapData(const QString& mapData);
+    Tile::TileType charToTileType(QChar c) const;
+    Enemy::EnemyType stringToEnemyType(const QString& s) const;
+    NPC::NPCType stringToNPCType(const QString& s) const;
 };
 
 #endif // MAPMANAGER_H
