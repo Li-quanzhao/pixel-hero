@@ -1,0 +1,52 @@
+{
+  "levels": [
+    {
+      "id": "level_1",
+      "name": "新手村",
+      "width": 32,
+      "height": 24,
+      "tileset": "village.png",
+      "spawn_point": {"x": 4, "y": 4},
+      "tile_map": [
+        "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFGGGGFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFGGGGFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFGGGGFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFWWWWWWFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFWFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFWWWWWWWWFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFWFFFFFFWFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFWWWWWWWWFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+      ],
+      "enemies": ["goblin", "goblin", "slime", "slime", "slime"],
+      "enemy_positions": [
+        {"x": 10, "y": 8},
+        {"x": 20, "y": 12},
+        {"x": 15, "y": 5},
+        {"x": 8, "y": 17},
+        {"x": 25, "y": 8}
+      ],
+      "npcs": ["blacksmith", "shopkeeper", "quest_giver"],
+      "npc_positions": [
+        {"x": 12, "y": 10},
+        {"x": 15, "y": 10},
+        {"x": 20, "y": 20}
+      ]
+    }
+  ]
+}
