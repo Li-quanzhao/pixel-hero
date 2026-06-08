@@ -69,8 +69,8 @@ void Inventory::confirmItem()
             refresh();
         }
     } else if (item->type() == Item::CONSUMABLE) {
-        if (item->id() == "potion_hp") {
-            m_player->setHealth(m_player->health() + 50);
+        if (item->healAmount() > 0) {
+            m_player->setHealth(m_player->health() + item->healAmount());
             m_player->removeItemFromInventory(m_selectedSlot);
             refresh();
         }

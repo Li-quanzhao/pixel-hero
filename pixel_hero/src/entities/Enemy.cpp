@@ -9,32 +9,41 @@ Enemy::Enemy(EnemyType type, QGraphicsItem *parent)
     , m_attackTimer(0), m_patrolTimer(0)
     , m_patrolDirX(1), m_patrolDirY(0)
 {
-    QPixmap enemyPixmap(40, 40);
+    QString imagePath;
+    switch (type) {
+    case GOBLIN:   imagePath = ":/resources/images/entities/goblin.png"; break;
+    case SLIME:    imagePath = ":/resources/images/entities/slime.png"; break;
+    case SKELETON: imagePath = ":/resources/images/entities/skeleton.png"; break;
+    case BOSS:     imagePath = ":/resources/images/entities/boss.png"; break;
+    }
+
+    QPixmap enemyPixmap(imagePath);
+    bool imageLoaded = !enemyPixmap.isNull();
 
     switch (type) {
     case GOBLIN:
         m_maxHealth = 50; m_attack = 8; m_defense = 3;
         m_expReward = 20; m_goldReward = 10;
         m_moveSpeed = 1.5; m_attackInterval = 1.5;
-        enemyPixmap.fill(QColor(0x8b, 0x45, 0x13));
+        if (!imageLoaded) { enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0x8b, 0x45, 0x13)); }
         break;
     case SLIME:
         m_maxHealth = 20; m_attack = 5; m_defense = 1;
         m_expReward = 10; m_goldReward = 5;
         m_moveSpeed = 1.0; m_attackInterval = 2.0;
-        enemyPixmap.fill(QColor(0x22, 0x8b, 0x22));
+        if (!imageLoaded) { enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0x22, 0x8b, 0x22)); }
         break;
     case SKELETON:
         m_maxHealth = 80; m_attack = 12; m_defense = 5;
         m_expReward = 35; m_goldReward = 20;
         m_moveSpeed = 1.2; m_attackInterval = 1.2;
-        enemyPixmap.fill(QColor(0xc0, 0xc0, 0xc0));
+        if (!imageLoaded) { enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0xc0, 0xc0, 0xc0)); }
         break;
     case BOSS:
         m_maxHealth = 300; m_attack = 25; m_defense = 15;
         m_expReward = 200; m_goldReward = 100;
         m_moveSpeed = 0.8; m_attackInterval = 1.0;
-        enemyPixmap.fill(QColor(0x8b, 0x00, 0x00));
+        if (!imageLoaded) { enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0x8b, 0x00, 0x00)); }
         break;
     }
 

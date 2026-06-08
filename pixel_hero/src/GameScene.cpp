@@ -47,9 +47,25 @@ void GameScene::startGame()
     m_player->setZValue(10);
 
     // 给玩家一些初始道具
-    m_player->addItemToInventory(new Weapon("sword_001", "铁剑"));
-    m_player->addItemToInventory(new Armor("armor_001", "皮甲"));
-    m_player->addItemToInventory(new Item("potion_hp", "生命药水", Item::CONSUMABLE));  // Note: this won't compile as Item is abstract-like
+    Weapon* starterWeapon = new Weapon("sword_001", "铁剑");
+    starterWeapon->setAttackBonus(8);
+    m_player->addItemToInventory(starterWeapon);
+
+    Armor* starterArmor = new Armor("armor_001", "皮甲");
+    starterArmor->setDefenseBonus(5);
+    m_player->addItemToInventory(starterArmor);
+
+    Item* potion = new Item("potion_hp", "生命药水", Item::CONSUMABLE);
+    potion->setHealAmount(50);
+    potion->setPrice(30);
+    potion->setDescription("恢复50点生命值");
+    m_player->addItemToInventory(potion);
+
+    Item* potion2 = new Item("potion_hp", "生命药水", Item::CONSUMABLE);
+    potion2->setHealAmount(50);
+    potion2->setPrice(30);
+    potion2->setDescription("恢复50点生命值");
+    m_player->addItemToInventory(potion2);
 
     m_isPaused = false;
     m_isStarted = true;

@@ -7,7 +7,7 @@
       "attack": 8,
       "defense": 0,
       "price": 100,
-      "description": "普通的铁剑"
+      "description": "普通的铁剑，新手冒险者的第一把武器"
     },
     {
       "id": "sword_002",
@@ -16,7 +16,25 @@
       "attack": 15,
       "defense": 0,
       "price": 300,
-      "description": "锋利的钢剑"
+      "description": "锋利的钢剑，锻造精良"
+    },
+    {
+      "id": "sword_003",
+      "name": "火焰剑",
+      "type": "weapon",
+      "attack": 25,
+      "defense": 0,
+      "price": 800,
+      "description": "附魔火焰的利剑，对敌人造成灼烧伤害"
+    },
+    {
+      "id": "sword_004",
+      "name": "暗影之刃",
+      "type": "weapon",
+      "attack": 35,
+      "defense": 0,
+      "price": 1500,
+      "description": "传说中暗影刺客的武器，削铁如泥"
     },
     {
       "id": "armor_001",
@@ -25,16 +43,44 @@
       "attack": 0,
       "defense": 5,
       "price": 80,
-      "description": "轻便的皮甲"
+      "description": "轻便的皮甲，基础防护"
     },
     {
       "id": "armor_002",
+      "name": "锁子甲",
+      "type": "armor",
+      "attack": 0,
+      "defense": 10,
+      "price": 200,
+      "description": "铁环编织的铠甲，防御力不错"
+    },
+    {
+      "id": "armor_003",
       "name": "铁甲",
       "type": "armor",
       "attack": 0,
-      "defense": 12,
-      "price": 250,
-      "description": "坚固的铁甲"
+      "defense": 18,
+      "price": 500,
+      "description": "坚固的铁甲，能抵挡大部分攻击"
+    },
+    {
+      "id": "armor_004",
+      "name": "龙鳞甲",
+      "type": "armor",
+      "attack": 0,
+      "defense": 30,
+      "price": 2000,
+      "description": "用龙鳞打造的传说铠甲，几乎不破"
+    },
+    {
+      "id": "potion_hp_small",
+      "name": "小型生命药水",
+      "type": "consumable",
+      "attack": 0,
+      "defense": 0,
+      "price": 20,
+      "healAmount": 30,
+      "description": "恢复30点生命值"
     },
     {
       "id": "potion_hp",
@@ -42,8 +88,19 @@
       "type": "consumable",
       "attack": 0,
       "defense": 0,
-      "price": 30,
+      "price": 50,
+      "healAmount": 50,
       "description": "恢复50点生命值"
+    },
+    {
+      "id": "potion_hp_large",
+      "name": "大型生命药水",
+      "type": "consumable",
+      "attack": 0,
+      "defense": 0,
+      "price": 120,
+      "healAmount": 100,
+      "description": "恢复100点生命值"
     },
     {
       "id": "potion_mp",
@@ -52,16 +109,82 @@
       "attack": 0,
       "defense": 0,
       "price": 25,
+      "healAmount": 30,
       "description": "恢复30点魔法值"
     },
     {
-      "id": "key_001",
+      "id": "key_copper",
       "name": "铜钥匙",
       "type": "material",
       "attack": 0,
       "defense": 0,
       "price": 10,
       "description": "打开普通宝箱的钥匙"
+    },
+    {
+      "id": "key_silver",
+      "name": "银钥匙",
+      "type": "material",
+      "attack": 0,
+      "defense": 0,
+      "price": 50,
+      "description": "打开稀有宝箱的钥匙"
+    },
+    {
+      "id": "key_gold",
+      "name": "金钥匙",
+      "type": "material",
+      "attack": 0,
+      "defense": 0,
+      "price": 200,
+      "description": "打开传说宝箱的钥匙"
+    },
+    {
+      "id": "gem_ruby",
+      "name": "红宝石",
+      "type": "material",
+      "attack": 0,
+      "defense": 0,
+      "price": 150,
+      "description": "闪耀的红色宝石，可以卖个好价钱"
+    },
+    {
+      "id": "gem_sapphire",
+      "name": "蓝宝石",
+      "type": "material",
+      "attack": 0,
+      "defense": 0,
+      "price": 150,
+      "description": "深邃的蓝色宝石，可以卖个好价钱"
+    },
+    {
+      "id": "gem_emerald",
+      "name": "绿宝石",
+      "type": "material",
+      "attack": 0,
+      "defense": 0,
+      "price": 200,
+      "description": "翠绿的宝石，可以卖个好价钱"
+    },
+    {
+      "id": "scroll_fireball",
+      "name": "火球术卷轴",
+      "type": "consumable",
+      "attack": 40,
+      "defense": 0,
+      "price": 60,
+      "healAmount": 0,
+      "description": "使用后释放火球术，对单个敌人造成40点伤害"
+    },
+    {
+      "id": "scroll_lightning",
+      "name": "闪电卷轴",
+      "type": "consumable",
+      "attack": 60,
+      "defense": 0,
+      "price": 100,
+      "healAmount": 0,
+      "description": "使用后释放闪电，对单个敌人造成60点伤害"
     }
   ]
 }

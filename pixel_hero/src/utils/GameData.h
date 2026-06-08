@@ -37,6 +37,7 @@ public:
         int attack;
         int defense;
         int price;
+        int healAmount;
         QString description;
     };
 

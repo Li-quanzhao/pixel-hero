@@ -4,6 +4,7 @@
 #include <QGraphicsPixmapItem>
 #include <QString>
 #include <QList>
+#include <QStringList>
 
 class NPC : public QGraphicsPixmapItem
 {
@@ -25,11 +26,18 @@ public:
     void interact();
     QString getCurrentDialogue();
 
+    // 商店功能
+    bool hasShop() const;
+    QStringList shopItemIds() const;
+
 private:
     NPCType m_type;
     QString m_name;
     QList<QString> m_dialogues;
     int m_currentDialogueIndex;
+    QStringList m_shopItemIds;
+
+    void initShopData();
 };
 
 #endif // NPC_H

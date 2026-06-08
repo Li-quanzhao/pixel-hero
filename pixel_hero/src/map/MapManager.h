@@ -21,11 +21,17 @@ public:
 
     void loadMap(const QString& mapName);
     void renderMap(QGraphicsScene* scene);
+    void clearScene(QGraphicsScene* scene);
     QPointF getPlayerSpawnPoint() const;
     bool checkCollision(QRectF rect);
+    void removeEnemy(Enemy* enemy);
     QList<Enemy*> getEnemies() const;
     QList<NPC*> getNPCs() const;
     void update(qreal deltaTime);
+    void clearMap();
+    Tile::TileType charToTileType(QChar c) const;
+    Enemy::EnemyType stringToEnemyType(const QString& s) const;
+    NPC::NPCType stringToNPCType(const QString& s) const;
 
 private:
     QString m_currentMap;
@@ -35,11 +41,6 @@ private:
     QList<NPC*> m_npcs;
     int m_mapWidth;
     int m_mapHeight;
-
-    void clearMap();
-    Tile::TileType charToTileType(QChar c) const;
-    Enemy::EnemyType stringToEnemyType(const QString& s) const;
-    NPC::NPCType stringToNPCType(const QString& s) const;
 };
 
 #endif // MAPMANAGER_H

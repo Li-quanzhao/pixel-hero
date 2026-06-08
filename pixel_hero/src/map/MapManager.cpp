@@ -119,15 +119,35 @@ void MapManager::renderMap(QGraphicsScene* scene)
         }
     }
 
-    // 渲染敌人
     for (Enemy* enemy : m_enemies) {
         scene->addItem(enemy);
     }
 
-    // 渲染 NPC
     for (NPC* npc : m_npcs) {
         scene->addItem(npc);
     }
+}
+
+void MapManager::clearScene(QGraphicsScene* scene)
+{
+    for (int y = 0; y < m_mapHeight; ++y) {
+        for (int x = 0; x < m_mapWidth; ++x) {
+            if (m_tiles[y][x] && m_tiles[y][x]->scene()) {
+                scene->removeItem(m_tiles[y][x]);
+            }
+        }
+    }
+    for (Enemy* enemy : m_enemies) {
+        if (enemy->scene()) scene->removeItem(enemy);
+    }
+    for (NPC* npc : m_npcs) {
+        if (npc->scene()) scene->removeItem(npc);
+    }
+}
+
+void MapManager::removeEnemy(Enemy* enemy)
+{
+    m_enemies.removeAll(enemy);
 }
 
 QPointF MapManager::getPlayerSpawnPoint() const

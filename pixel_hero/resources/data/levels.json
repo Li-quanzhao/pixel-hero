@@ -17,7 +17,7 @@
         "WFFFFFFFFFFFFGGGGFFFFFFFFFFFFFFFW",
         "WFFFFFFFFFFFFGGGGFFFFFFFFFFFFFFFW",
         "WFFFFFFFFFFFFGGGGFFFFFFFFFFFFFFFW",
-        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFDDDDFFFFFW",
         "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
         "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
         "WFFFFFFFFFFFFWWWWWWFFFFFFFFFFFFFW",
@@ -41,11 +41,107 @@
         {"x": 8, "y": 17},
         {"x": 25, "y": 8}
       ],
-      "npcs": ["blacksmith", "shopkeeper", "quest_giver"],
+      "npcs": ["villager", "blacksmith", "shopkeeper", "quest_giver"],
       "npc_positions": [
-        {"x": 12, "y": 10},
-        {"x": 15, "y": 10},
-        {"x": 20, "y": 20}
+        {"x": 6, "y": 10},
+        {"x": 12, "y": 14},
+        {"x": 14, "y": 14},
+        {"x": 20, "y": 21}
+      ]
+    },
+    {
+      "id": "level_2",
+      "name": "幽暗森林",
+      "width": 32,
+      "height": 24,
+      "tileset": "forest.png",
+      "spawn_point": {"x": 2, "y": 2},
+      "tile_map": [
+        "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFGGGGFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFGGGGGGFFFFFFFFFFFWWWWWFFFFFW",
+        "WFFGGGGGGGFFFGGGGFFFFWFFFFFFFFFW",
+        "WFFFGGGGGFFFFFFFFFFFFFFWFFFFFFFW",
+        "WFFFFGGGGFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFGGGGGGGGFFFFFFFFFW",
+        "WFFFFFFFFFFFFGGGGGGGGFFFFFFFFFW",
+        "WFFFFFFFFFFFFFGGGGGGGFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFGGGGGGGFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFGGGGGGGFFFFFFFW",
+        "WFFFFFFFFFFFFFFFGGGGGGGGFFFFFFFF",
+        "WFFFFFFFFFFFFFFGGGGGGGGGFFFFFFFF",
+        "WFFFFFFFFFFFFFFFFGGGGFFFFFFFFFW",
+        "WFFFFFWWWWFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFWFFFFFFFFFFFFGGGGGFFFFFFW",
+        "WFFFFFWFFFFFFFFFFFFGGGGGGFFFFFFW",
+        "WFFFFFWFFFFFFFFFFFFFFGFFFFFFFFW",
+        "WFWWWWWFFFFFFFFFFFFFFFFFFFDDDDW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFHHHHHHFFF",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+      ],
+      "enemies": ["goblin", "goblin", "goblin", "slime", "slime", "skeleton", "skeleton"],
+      "enemy_positions": [
+        {"x": 6, "y": 6},
+        {"x": 14, "y": 8},
+        {"x": 18, "y": 6},
+        {"x": 10, "y": 14},
+        {"x": 22, "y": 12},
+        {"x": 16, "y": 17},
+        {"x": 8, "y": 18}
+      ],
+      "npcs": ["villager", "quest_giver"],
+      "npc_positions": [
+        {"x": 4, "y": 6},
+        {"x": 26, "y": 5}
+      ]
+    },
+    {
+      "id": "level_3",
+      "name": "龙之洞穴",
+      "width": 32,
+      "height": 24,
+      "tileset": "cave.png",
+      "spawn_point": {"x": 2, "y": 22},
+      "tile_map": [
+        "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+        "WWWWWWWWWWWWWWWWLLWWWWWWWWWWWWWW",
+        "WFFFFFFFFFFFFFFWWWLLWWWWDDDDWWW",
+        "WFFFFFFFFFFFFFFWWWWLLWWWWWLLWWW",
+        "WFFFFFFFFFFFWWWFFWLLLLWWWLLWWW",
+        "WFFFFFFFFFFFFFFFWWFWWFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFWFFWFFFFFFFFFWW",
+        "WFFFFFFFFFFFFFFFWFFWWWWDDDDWWFW",
+        "WFFFFWWWWWFFFFFFWFFFFFFFFFFFFFW",
+        "WFFWWFFFFFFWFFFFWFFFFFFFFFFFFFF",
+        "WFFWWWFFFFFFFFFWFFWWWWWWFFFFFFW",
+        "WFWWFFFFFFFFFFFFWFFFFFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFWFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFWWWWFFFFFFFFFFFFFWWWWFFFFFFW",
+        "WFFFFFFWFFFFFFFFFFFWWFFFFFFFFFF",
+        "WFFFFFFWFFFFFFFFFFFFWFFFFFFFFFW",
+        "WFFWWWWFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WFFWFFFFFFFFFFFFWWWFFFFFFFFFFFW",
+        "WFFWFFFFFFFFFFFWWWWFFFFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFWWFFFDDDW",
+        "WFFFFFFFFFFFFFWWWWFFFFWWWFFFFFFW",
+        "WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFW",
+        "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+      ],
+      "enemies": ["skeleton", "skeleton", "skeleton", "slime", "boss"],
+      "enemy_positions": [
+        {"x": 8, "y": 8},
+        {"x": 20, "y": 10},
+        {"x": 26, "y": 12},
+        {"x": 12, "y": 16},
+        {"x": 16, "y": 4}
+      ],
+      "npcs": ["shopkeeper"],
+      "npc_positions": [
+        {"x": 4, "y": 20}
       ]
     }
   ]

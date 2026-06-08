@@ -112,6 +112,7 @@ bool GameData::loadItemData(const QString& path)
         item.attack = itemObj["attack"].toInt();
         item.defense = itemObj["defense"].toInt();
         item.price = itemObj["price"].toInt();
+        item.healAmount = itemObj["healAmount"].toInt(0);
         item.description = itemObj["description"].toString();
 
         m_items.append(item);

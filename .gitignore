@@ -16,6 +16,16 @@ qrc_*.cpp
 Makefile
 Makefile.*
 .qmake.stash
+mkspecs/
+
+# Copied Qt build tools (keep in project, don't commit to git)
+qmake.exe
+rcc.exe
+moc.exe
+uic.exe
+Qt6Core.dll
+Qt6Bundled*.dll
+*.a
 
 # IDE and editor files
 .vscode/
@@ -46,7 +56,7 @@ env/
 __pycache__/
 *.pyc
 
-# MinGW/MSVC runtime DLLs (optional - uncomment if you don't want to track them)
+# MinGW/MSVC runtime DLLs (optional)
 # libgcc_s_seh-1.dll
 # libstdc++-6.dll
 # libwinpthread-1.dll

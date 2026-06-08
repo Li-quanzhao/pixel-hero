@@ -9,8 +9,11 @@ Player::Player(QGraphicsItem *parent)
     , m_isAttacking(false)
     , m_attackCooldown(0.5), m_currentAttackCooldown(0)
 {
-    QPixmap playerPixmap(48, 48);
-    playerPixmap.fill(QColor(0x4a, 0x90, 0xa4));
+    QPixmap playerPixmap(":/resources/images/entities/player.png");
+    if (playerPixmap.isNull()) {
+        playerPixmap = QPixmap(48, 48);
+        playerPixmap.fill(QColor(0x4a, 0x90, 0xa4));
+    }
     setPixmap(playerPixmap);
     setOffset(-boundingRect().width() / 2, -boundingRect().height());
 }

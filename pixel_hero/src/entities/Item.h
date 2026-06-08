@@ -22,9 +22,15 @@ public:
     ItemType type() const;
     int price() const;
     QString description() const;
+    int healAmount() const;
+    int attack() const;
+    int defense() const;
 
     void setPrice(int price);
     void setDescription(const QString& description);
+    void setHealAmount(int amount);
+    void setAttack(int attack);
+    void setDefense(int defense);
 
 private:
     QString m_id;
@@ -32,6 +38,9 @@ private:
     ItemType m_type;
     int m_price;
     QString m_description;
+    int m_healAmount;
+    int m_attack;
+    int m_defense;
 };
 
 #endif // ITEM_H

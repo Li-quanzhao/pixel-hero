@@ -65,7 +65,7 @@ private:
 
     // NPC
     void handleNPCInteraction(NPC* npc);
-    void openShop();
+    void openShop(NPC* npc);
     void openQuestDialog(NPC* npc);
 };
 

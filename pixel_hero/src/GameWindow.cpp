@@ -147,29 +147,33 @@ bool GameWindow::eventFilter(QObject *obj, QEvent *event)
 // ========================= NPC交互 =========================
 void GameWindow::handleNPCInteraction(NPC* npc)
 {
-    switch (npc->npcType()) {
-    case NPC::SHOPKEEPER:
-        openShop();
-        break;
-    case NPC::QUEST_GIVER:
+    if (npc->npcType() == NPC::QUEST_GIVER) {
         openQuestDialog(npc);
-        break;
-    default:
+    } else if (npc->hasShop()) {
+        openShop(npc);
+    } else {
         npc->interact();
         QMessageBox::information(this, npc->name(),
             npc->name() + "：「" + npc->getCurrentDialogue() + "」");
         setFocus();
-        break;
     }
 }
 
-void GameWindow::openShop()
+void GameWindow::openShop(NPC* npc)
 {
-    // 简单商店：从 items.json 读取前几个可购买的物品
-    auto itemDataList = GameData::instance()->items();
+    QStringList shopIds = npc->shopItemIds();
+    if (shopIds.isEmpty()) {
+        QMessageBox::information(this, "商店", "暂时没有可购买的物品");
+        setFocus();
+        return;
+    }
+
     QStringList itemNames;
-    for (const auto& d : itemDataList) {
-        if (d.price > 0) itemNames << QString("%1 (%2金币)").arg(d.name).arg(d.price);
+    for (const auto& id : shopIds) {
+        auto d = GameData::instance()->getItemById(id);
+        if (!d.id.isEmpty()) {
+            itemNames << QString("%1 (%2金币)").arg(d.name).arg(d.price);
+        }
     }
 
     if (itemNames.isEmpty()) {
@@ -179,27 +183,38 @@ void GameWindow::openShop()
     }
 
     bool ok;
-    QString choice = QInputDialog::getItem(this, "商店 - 购买物品",
+    QString choice = QInputDialog::getItem(this, QString("%1的商店 - 购买物品").arg(npc->name()),
         "选择要购买的物品:", itemNames, 0, false, &ok);
 
     if (ok && !choice.isEmpty()) {
         int idx = itemNames.indexOf(choice);
-        if (idx >= 0 && idx < itemDataList.size()) {
-            auto& d = itemDataList[idx];
+        if (idx >= 0 && idx < shopIds.size()) {
+            auto d = GameData::instance()->getItemById(shopIds[idx]);
             Player* player = m_scene->getPlayer();
-            if (!player) return;
+            if (!player || d.id.isEmpty()) return;
 
             if (player->gold() < d.price) {
                 QMessageBox::warning(this, "商店", "金币不足！");
             } else {
                 player->setGold(player->gold() - d.price);
-                if (d.type == "weapon")
-                    player->addItemToInventory(new Weapon(d.id, d.name));
-                else if (d.type == "armor")
-                    player->addItemToInventory(new Armor(d.id, d.name));
-                else
-                    player->addItemToInventory(new Item(d.id, d.name, Item::CONSUMABLE));
-
+                if (d.type == "weapon") {
+                    Weapon* w = new Weapon(d.id, d.name);
+                    w->setAttackBonus(d.attack);
+                    player->addItemToInventory(w);
+                } else if (d.type == "armor") {
+                    Armor* a = new Armor(d.id, d.name);
+                    a->setDefenseBonus(d.defense);
+                    player->addItemToInventory(a);
+                } else {
+                    Item* item = new Item(d.id, d.name, 
+                        d.type == "consumable" ? Item::CONSUMABLE : Item::MATERIAL);
+                    item->setHealAmount(d.healAmount);
+                    item->setAttack(d.attack);
+                    item->setDefense(d.defense);
+                    item->setPrice(d.price);
+                    item->setDescription(d.description);
+                    player->addItemToInventory(item);
+                }
                 if (m_inventory) m_inventory->refresh();
                 QMessageBox::information(this, "商店", "购买成功！获得 " + d.name);
             }
@@ -323,11 +338,11 @@ void GameWindow::saveCurrentGame()
 
     for (Item* item : player->inventory()) {
         data.inventoryIds << item->id();
-        if (item->type() == Item::WEAPON)
-            data.weaponId = item->id();
-        else if (item->type() == Item::ARMOR)
-            data.armorId = item->id();
     }
+    if (player->getEquippedWeapon())
+        data.weaponId = player->getEquippedWeapon()->id();
+    if (player->getEquippedArmor())
+        data.armorId = player->getEquippedArmor()->id();
 
     if (SaveManager::instance()->saveGame(data)) {
         QMessageBox::information(this, "存档", "游戏已保存！");
@@ -353,17 +368,26 @@ void GameWindow::loadSavedGame()
 
     Player* player = m_scene->getPlayer();
     if (player) {
+        // 清除 startGame 添加的初始道具，恢复存档数据
+        player->inventory().clear();
+        player->unequipWeapon();
+        player->unequipArmor();
+
         player->applySaveData(data.level, data.exp, data.health,
             data.maxHealth, data.attack, data.defense, data.gold);
         player->setPos(data.posX, data.posY);
 
         // 恢复装备
         if (!data.weaponId.isEmpty()) {
-            Weapon* w = new Weapon(data.weaponId, data.weaponId);
+            auto wData = GameData::instance()->getItemById(data.weaponId);
+            Weapon* w = new Weapon(data.weaponId, wData.name.isEmpty() ? data.weaponId : wData.name);
+            w->setAttackBonus(wData.attack > 0 ? wData.attack : 8);
             player->equipWeapon(w);
         }
         if (!data.armorId.isEmpty()) {
-            Armor* a = new Armor(data.armorId, data.armorId);
+            auto aData = GameData::instance()->getItemById(data.armorId);
+            Armor* a = new Armor(data.armorId, aData.name.isEmpty() ? data.armorId : aData.name);
+            a->setDefenseBonus(aData.defense > 0 ? aData.defense : 5);
             player->equipArmor(a);
         }
     }
