@@ -6,6 +6,8 @@
 #include <QRectF>
 #include <QString>
 #include <QList>
+#include <QSet>
+#include <QGraphicsSceneWheelEvent>
 
 class Menu : public QObject, public QGraphicsItem
 {
@@ -25,6 +27,7 @@ public:
     void show();
     void hide();
     bool isVisible() const;
+    void setItemDisabled(int index, bool disabled);
 
     // 键盘操作
     void selectPrevious();
@@ -37,6 +40,7 @@ public:
     // 鼠标事件
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void wheelEvent(QGraphicsSceneWheelEvent *event) override;
 
 signals:
     void startGame();
@@ -49,6 +53,7 @@ private:
     MenuType m_type;
     bool m_isVisible;
     QList<QString> m_menuItems;
+    QSet<int>      m_disabledItems;
     int m_selectedIndex;
 
     // 菜单布局参数

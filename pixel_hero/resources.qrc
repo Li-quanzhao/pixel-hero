@@ -1,26 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>resources/data/levels.json</file>
-        <file>resources/data/items.json</file>
-        <file>resources/images/entities/player.png</file>
-        <file>resources/images/entities/goblin.png</file>
-        <file>resources/images/entities/slime.png</file>
-        <file>resources/images/entities/skeleton.png</file>
-        <file>resources/images/entities/boss.png</file>
-        <file>resources/images/entities/villager.png</file>
-        <file>resources/images/entities/blacksmith.png</file>
-        <file>resources/images/entities/shopkeeper.png</file>
-        <file>resources/images/entities/quest_giver.png</file>
-        <file>resources/images/tiles/floor.png</file>
-        <file>resources/images/tiles/wall.png</file>
-        <file>resources/images/tiles/grass.png</file>
-        <file>resources/images/tiles/water.png</file>
-        <file>resources/images/tiles/lava.png</file>
-        <file>resources/images/tiles/door.png</file>
-        <file>resources/images/ui/icon_sword.png</file>
-        <file>resources/images/ui/icon_armor.png</file>
-        <file>resources/images/ui/icon_potion.png</file>
-        <file>resources/images/ui/icon_key.png</file>
-        <file>resources/images/ui/icon_gem.png</file>
+        <file>resources/data/skills.json</file>
+        <file>resources/data/survival_waves.json</file>
+        <file>resources/data/weapons.json</file>
     </qresource>
 </RCC>

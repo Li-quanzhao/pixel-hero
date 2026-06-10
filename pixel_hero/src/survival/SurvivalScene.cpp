@@ -1,0 +1,368 @@
+#include "SurvivalScene.h"
+#include "SurvivalStats.h"
+#include "entities/Enemy.h"
+#include "utils/GameData.h"
+#include <QPainter>
+#include <QRandomGenerator>
+#include <QLineF>
+#include <cmath>
+#include <algorithm>
+
+SurvivalScene::SurvivalScene(QObject* parent)
+    : QGraphicsScene(parent)
+    , m_player(nullptr), m_waveManager(nullptr)
+    , m_upgradeUI(nullptr), m_hud(nullptr), m_stats(nullptr)
+    , m_gameTimer(new QTimer(this))
+    , m_isPaused(false), m_isStarted(false)
+    , m_totalKills(0)
+{
+    setSceneRect(0, 0, 800, 600);
+
+    m_gameTimer->setInterval(16);
+    connect(m_gameTimer, &QTimer::timeout, this, &SurvivalScene::updateGame);
+}
+
+SurvivalScene::~SurvivalScene() {}
+
+void SurvivalScene::initScene()
+{
+    clear();
+
+    // 背景
+    setBackgroundBrush(QColor(20, 20, 35));
+
+    // 玩家
+    m_player = new SurvivalPlayer();
+    m_player->setPos(400, 300);
+    addItem(m_player);
+
+    // 波次管理器
+    m_waveManager = new WaveManager(this, this);
+
+    // HUD
+    m_hud = new SurvivalHUD();
+    m_hud->bind(m_player, m_waveManager);
+    addItem(m_hud);
+
+    // 升级UI
+    m_upgradeUI = new UpgradeUI();
+    addItem(m_upgradeUI);
+
+    // 技能选择信号
+    connect(m_upgradeUI, &UpgradeUI::skillSelected, this, &SurvivalScene::onSkillSelected);
+
+    // 升级检测：在 updateGame 中轮询
+}
+
+void SurvivalScene::startGame()
+{
+    // 无参数版本：使用默认角色(战士)+默认武器(短剑)
+    startGame("warrior", "short_sword");
+}
+
+void SurvivalScene::startGame(const QString& characterId, const QString& weaponId)
+{
+    initScene();
+
+    // 应用角色配置
+    auto chars = SurvivalPlayer::availableCharacters();
+    for (const auto& c : chars) {
+        if (c.id == characterId) {
+            m_player->applyCharacter(c);
+            break;
+        }
+    }
+
+    // 应用武器
+    const WeaponData* wpn = GameData::instance()->getWeaponById(weaponId);
+    if (wpn) m_player->applyWeapon(*wpn);
+
+    m_gameTimer->start();
+    m_isStarted = true;
+    m_isPaused = false;
+    m_totalKills = 0;
+    m_waveManager->start();
+    m_hud->updateHUD();
+}
+
+void SurvivalScene::startFromSave(const SurvivalSaveData& data)
+{
+    initScene();
+
+    // 应用角色配置
+    auto chars = SurvivalPlayer::availableCharacters();
+    for (const auto& c : chars) {
+        if (c.id == data.characterId) {
+            m_player->applyCharacter(c);
+            break;
+        }
+    }
+
+    // 应用武器
+    const WeaponData* wpn = GameData::instance()->getWeaponById(data.weaponId);
+    if (wpn) m_player->applyWeapon(*wpn);
+
+    // 恢复玩家状态
+    m_player->setLevel(data.playerLevel);
+    m_player->setExp(data.playerExp);
+    m_player->setHealth(data.playerHealth);
+    m_player->setMaxHealth(data.playerMaxHealth);
+
+    // 恢复技能
+    for (const auto& pair : data.skills) {
+        m_player->addSkill(pair.first, pair.second);
+    }
+
+    // 恢复波次（先加载配置再恢复）
+    m_waveManager->loadWaveConfig();
+    m_waveManager->restoreState(data.currentWave, data.totalKills, data.elapsedTime);
+
+    m_gameTimer->start();
+    m_isStarted = true;
+    m_isPaused = false;
+    m_totalKills = data.totalKills;
+    m_hud->updateHUD();
+}
+
+void SurvivalScene::pauseGame()
+{
+    m_isPaused = true;
+    m_gameTimer->stop();
+}
+
+void SurvivalScene::resumeGame()
+{
+    m_isPaused = false;
+    m_gameTimer->start();
+}
+
+void SurvivalScene::endGame()
+{
+    m_gameTimer->stop();
+    m_isPaused = true;
+    m_isStarted = false;
+
+    int wave = m_waveManager ? m_waveManager->currentWave() : 0;
+    float time = m_waveManager ? m_waveManager->elapsedTime() : 0;
+    int kills = m_totalKills;
+
+    // 更新统计信息
+    if (m_stats) {
+        m_stats->setWave(wave);
+        m_stats->setElapsedTime(time);
+    }
+
+    bool record = m_stats ? m_stats->isNewRecord() : false;
+    if (m_stats && record) {
+        m_stats->saveRecord(wave, kills, time);
+    }
+    emit gameFinished(wave, kills, time, record);
+}
+
+float SurvivalScene::elapsedTime() const
+{
+    return m_waveManager ? m_waveManager->elapsedTime() : 0;
+}
+
+void SurvivalScene::updateGame()
+{
+    if (!m_player || !m_waveManager || m_isPaused) return;
+    if (m_upgradeUI->isVisible()) return; // 升级选技时暂停
+
+    // 玩家死亡检测
+    if (!m_player->isAlive()) {
+        endGame();
+        return;
+    }
+
+    qreal dt = 0.016;
+
+    // 1. 处理WASD移动
+    Player::MoveState& ms = m_player->moveState();
+    qreal spd = m_player->speed() * 60 * dt;
+    qreal dx = 0, dy = 0;
+    if (ms.moveLeft)  dx -= spd;
+    if (ms.moveRight) dx += spd;
+    if (ms.moveUp)    dy -= spd;
+    if (ms.moveDown)  dy += spd;
+
+    QPointF newPos = m_player->pos() + QPointF(dx, dy);
+    // 边界碰撞
+    newPos.setX(qBound(24.0, newPos.x(), 776.0));
+    newPos.setY(qBound(24.0, newPos.y(), 576.0));
+    m_player->setPos(newPos);
+
+    // 2. 玩家更新（技能冷却）
+    m_player->update(dt);
+
+    // 3. 自动攻击临近敌人
+    autoAttackNearestEnemy();
+
+    // 4. 自动释放技能
+    autoCastSkills();
+
+    // 5. 收集存活敌人 + AI更新
+    QList<QGraphicsItem*> items = this->items();
+    QList<Enemy*> aliveEnemies;
+    for (QGraphicsItem* item : items) {
+        Enemy* enemy = dynamic_cast<Enemy*>(item);
+        if (enemy && enemy->isAlive()) {
+            aliveEnemies.append(enemy);
+        }
+    }
+    for (Enemy* enemy : aliveEnemies) {
+        enemy->updateAI(m_player, aliveEnemies, dt);
+    }
+
+    // 6. 波次管理器更新
+    m_waveManager->update(dt);
+
+    // 7. 清理死亡敌人
+    cleanupDeadEnemies();
+
+    // 8. 检查玩家死亡
+    checkPlayerDeath();
+
+    // 9. HUD更新
+    m_hud->updateHUD();
+
+    // 10. 检测升级（攒到 pending，弹升级UI）
+    if (m_player->pendingLevelUps() > 0 && !m_upgradeUI->isVisible()) {
+        pauseGame();
+        emit levelUp(m_player->level());
+    }
+}
+
+void SurvivalScene::autoAttackNearestEnemy()
+{
+    Enemy* target = findNearestEnemy();
+    if (target) {
+        m_player->attackEnemy(target);
+    }
+}
+
+Enemy* SurvivalScene::findNearestEnemy() const
+{
+    if (!m_player) return nullptr;
+    QList<QGraphicsItem*> items = const_cast<SurvivalScene*>(this)->items();
+    QPointF playerPos = m_player->pos();
+    Enemy* nearest = nullptr;
+    qreal minDist = 60; // 攻击范围
+
+    for (QGraphicsItem* item : items) {
+        Enemy* enemy = dynamic_cast<Enemy*>(item);
+        if (!enemy || !enemy->isAlive()) continue;
+        qreal d = QLineF(playerPos, enemy->pos()).length();
+        if (d < minDist) { minDist = d; nearest = enemy; }
+    }
+    return nearest;
+}
+
+void SurvivalScene::autoCastSkills()
+{
+    if (!m_player) return;
+    QList<QGraphicsItem*> itemList = items();
+
+    for (auto& as : m_player->activeSkills()) {
+        if (as.currentCooldown > 0) continue;
+        const SkillData* sd = GameData::instance()->getSkillById(as.skillId);
+        if (!sd || sd->type != "active") continue;
+
+        // 收集存活敌人
+        QList<Enemy*> enemies;
+        for (QGraphicsItem* item : itemList) {
+            Enemy* e = dynamic_cast<Enemy*>(item);
+            if (e && e->isAlive()) enemies.append(e);
+        }
+        if (enemies.isEmpty()) continue;
+
+        QPointF pp = m_player->pos();
+
+        if (as.skillId == "fireball") {
+            // 向最近敌人发射火球
+            Enemy* nearest = nullptr;
+            qreal nd = 99999;
+            for (Enemy* e : enemies) {
+                qreal d = QLineF(pp, e->pos()).length();
+                if (d < nd) { nd = d; nearest = e; }
+            }
+            if (nearest) nearest->takeDamage(as.damage);
+        } else if (as.skillId == "lightning") {
+            // 连锁攻击
+            // 按距离排序
+            struct ED { Enemy* e; qreal d; };
+            QList<ED> sorted;
+            for (Enemy* e : enemies) {
+                sorted.append({e, QLineF(pp, e->pos()).length()});
+            }
+            std::sort(sorted.begin(), sorted.end(), [](const ED& a, const ED& b) { return a.d < b.d; });
+            int chain = qMin(as.extra, sorted.size());
+            for (int i = 0; i < chain; i++) {
+                sorted[i].e->takeDamage(as.damage);
+            }
+        } else if (as.skillId == "frost_nova") {
+            // 范围伤害
+            for (Enemy* e : enemies) {
+                qreal d = QLineF(pp, e->pos()).length();
+                if (d <= as.extra) e->takeDamage(as.damage);
+            }
+        }
+
+        // 重置冷却
+        as.currentCooldown = as.cooldown;
+    }
+}
+
+void SurvivalScene::cleanupDeadEnemies()
+{
+    QList<QGraphicsItem*> itemList = items();
+    for (QGraphicsItem* item : itemList) {
+        Enemy* enemy = dynamic_cast<Enemy*>(item);
+        if (enemy && !enemy->isAlive()) {
+            m_player->addExp(enemy->expReward());
+            m_totalKills++;
+            m_waveManager->addKill();
+            if (m_stats) m_stats->addKill();
+            removeItem(enemy);
+            delete enemy;
+        }
+    }
+}
+
+void SurvivalScene::checkPlayerDeath()
+{
+    if (m_player && m_player->health() <= 0) {
+        endGame();
+    }
+}
+
+void SurvivalScene::onSkillSelected(const QString& skillId)
+{
+    if (!m_player) return;
+    int currentLvl = m_player->skillLevel(skillId);
+    if (currentLvl > 0) {
+        m_player->upgradeSkill(skillId, currentLvl + 1);
+    } else {
+        m_player->addSkill(skillId, 1);
+    }
+    // 应用本次升级的属性加成
+    m_player->applyPendingLevelUp();
+    m_upgradeUI->hide();
+    resumeGame();
+}
+
+void SurvivalScene::drawBackground(QPainter* painter, const QRectF& rect)
+{
+    painter->fillRect(rect, QColor(20, 20, 35));
+}
+
+QList<Enemy*> SurvivalScene::aliveEnemies() const
+{
+    QList<Enemy*> result;
+    QList<QGraphicsItem*> itemList = const_cast<SurvivalScene*>(this)->items();
+    for (QGraphicsItem* item : itemList) {
+        Enemy* e = dynamic_cast<Enemy*>(item);
+        if (e && e->isAlive()) result.append(e);
+    }
+    return result;
+}

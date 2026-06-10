@@ -3,13 +3,14 @@
 
 #include <QGraphicsPixmapItem>
 #include <QPointF>
+#include <QList>
 
 class Player;
 
 class Enemy : public QGraphicsPixmapItem
 {
 public:
-    enum EnemyType { GOBLIN, SLIME, SKELETON, BOSS };
+    enum EnemyType { GOBLIN, SLIME, SKELETON, BAT, GOBLIN_ELITE, DRAGON };
     enum State { IDLE, PATROL, CHASE, ATTACKING, DEAD };
 
     Enemy(EnemyType type, QGraphicsItem *parent = nullptr);
@@ -25,10 +26,21 @@ public:
     EnemyType enemyType() const;
     State state() const;
 
+    void setHealth(int v);
+    void setMaxHealth(int v);
+    void setAttack(int v);
+    void setDefense(int v);
+    void setExpReward(int v);
+    void setGoldReward(int v);
+    void setMoveSpeed(float v);
+    void setAttackRange(float v);
+
     void takeDamage(int damage);
     void update(qreal deltaTime);
-    void updateAI(Player* player, qreal deltaTime);
+    void updateAI(Player* player, QList<Enemy*> otherEnemies, qreal deltaTime);
     bool isAlive() const;
+
+    QPointF pos() const { return QGraphicsPixmapItem::pos(); }
 
 private:
     EnemyType m_type;
@@ -40,13 +52,10 @@ private:
     int m_expReward;
     int m_goldReward;
     qreal m_moveSpeed;
+    qreal m_attackRange;
 
     qreal m_attackTimer;
     qreal m_attackInterval;
-    qreal m_patrolTimer;
-    QPointF m_patrolOrigin;
-    int m_patrolDirX;
-    int m_patrolDirY;
 };
 
 #endif // ENEMY_H

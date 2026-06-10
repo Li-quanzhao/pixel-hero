@@ -7,62 +7,61 @@ CONFIG += c++17
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
+# MinGW 16.1.0 compatibility: suppress QT_NEEDS_QMAIN / Qt6EntryPoint
+win32:!win32-msvc* {
+    DEFINES -= QT_NEEDS_QMAIN
+    QMAKE_LIBS_QT_ENTRY =
+}
+
 SOURCES += \
     src/main.cpp \
     src/GameWindow.cpp \
-    src/GameScene.cpp \
-    src/GameController.cpp \
     src/entities/Player.cpp \
     src/entities/Enemy.cpp \
-    src/entities/NPC.cpp \
-    src/entities/Item.cpp \
-    src/entities/Armor.cpp \
-    src/map/MapManager.cpp \
-    src/map/Tile.cpp \
-    src/map/CollisionLayer.cpp \
-    src/battle/BattleSystem.cpp \
-    src/battle/Skill.cpp \
-    src/battle/Weapon.cpp \
-    src/ui/HUD.cpp \
-    src/ui/Menu.cpp \
-    src/ui/Inventory.cpp \
-    src/utils/AnimationManager.cpp \
-    src/utils/ResourceManager.cpp \
     src/utils/GameData.cpp \
-    src/utils/SaveManager.cpp
+    src/utils/ResourceManager.cpp \
+    src/utils/AnimationManager.cpp \
+    src/ui/Menu.cpp \
+    src/ui/CharacterSelectUI.cpp \
+    src/ui/WeaponSelectUI.cpp \
+    src/ui/SaveLoadUI.cpp \
+    src/survival/SurvivalScene.cpp \
+    src/survival/WaveManager.cpp \
+    src/survival/UpgradeUI.cpp \
+    src/survival/SurvivalHUD.cpp \
+    src/survival/SurvivalPlayer.cpp \
+    src/survival/SurvivalStats.cpp \
+    src/survival/EnemyFactory.cpp
 
 HEADERS += \
     src/GameWindow.h \
-    src/GameScene.h \
-    src/GameController.h \
     src/entities/Player.h \
     src/entities/Enemy.h \
-    src/entities/NPC.h \
-    src/entities/Item.h \
-    src/entities/Armor.h \
-    src/map/MapManager.h \
-    src/map/Tile.h \
-    src/map/CollisionLayer.h \
-    src/battle/BattleSystem.h \
-    src/battle/Skill.h \
-    src/battle/Weapon.h \
-    src/ui/HUD.h \
-    src/ui/Menu.h \
-    src/ui/Inventory.h \
-    src/utils/AnimationManager.h \
-    src/utils/ResourceManager.h \
+    src/entities/Weapon.h \
     src/utils/GameData.h \
-    src/utils/SaveManager.h
+    src/utils/ResourceManager.h \
+    src/utils/AnimationManager.h \
+    src/ui/Menu.h \
+    src/ui/CharacterSelectUI.h \
+    src/ui/WeaponSelectUI.h \
+    src/ui/SaveLoadUI.h \
+    src/survival/SurvivalScene.h \
+    src/survival/WaveManager.h \
+    src/survival/UpgradeUI.h \
+    src/survival/SurvivalHUD.h \
+    src/survival/SurvivalPlayer.h \
+    src/survival/SurvivalStats.h \
+    src/survival/SurvivalSaveData.h \
+    src/survival/EnemyFactory.h
 
 RESOURCES += \
     resources.qrc
 
 INCLUDEPATH += src \
                src/entities \
-               src/map \
-               src/battle \
                src/ui \
-               src/utils
+               src/utils \
+               src/survival
 
 DESTDIR = bin
 OBJECTS_DIR = build

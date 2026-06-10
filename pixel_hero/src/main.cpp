@@ -1,4 +1,6 @@
 #include <QtWidgets/QApplication>
+#include <ctime>
+#include <cstdlib>
 #include "GameWindow.h"
 
 #ifdef Q_OS_WIN
@@ -16,6 +18,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 int main(int argc, char *argv[])
 {
+    // 初始化随机数种子（敌人巡逻AI依赖）
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+
     QApplication app(argc, argv);
     
     GameWindow window;

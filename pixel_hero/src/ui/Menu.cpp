@@ -1,6 +1,7 @@
 #include "Menu.h"
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneWheelEvent>
 
 Menu::Menu(MenuType type, QGraphicsItem *parent)
     : QObject(nullptr), QGraphicsItem(parent), m_type(type), m_isVisible(true), m_selectedIndex(0)
@@ -27,7 +28,7 @@ void Menu::setMenuType(MenuType type)
         m_menuItems << "开始游戏" << "读取存档" << "退出游戏";
         break;
     case PAUSE_MENU:
-        m_menuItems << "继续游戏" << "保存游戏" << "读取存档" << "退出游戏";
+        m_menuItems << "继续游戏" << "保存并退出" << "退出游戏(不保存)";
         break;
     case GAME_OVER_MENU:
         m_menuItems << "重新开始" << "返回主菜单" << "退出游戏";
@@ -54,22 +55,33 @@ bool Menu::isVisible() const
 
 void Menu::selectPrevious()
 {
-    if (m_selectedIndex > 0) {
-        m_selectedIndex--;
-        update();
-    }
+    int idx = m_selectedIndex;
+    do {
+        idx--;
+        if (idx < 0) idx = m_menuItems.size() - 1;
+        if (idx == m_selectedIndex) break; // 全禁用
+    } while (m_disabledItems.contains(idx));
+    m_selectedIndex = idx;
+    update();
 }
 
 void Menu::selectNext()
 {
-    if (m_selectedIndex < m_menuItems.size() - 1) {
-        m_selectedIndex++;
-        update();
-    }
+    int idx = m_selectedIndex;
+    do {
+        idx++;
+        if (idx >= m_menuItems.size()) idx = 0;
+        if (idx == m_selectedIndex) break; // 全禁用
+    } while (m_disabledItems.contains(idx));
+    m_selectedIndex = idx;
+    update();
 }
 
 void Menu::confirmSelection()
 {
+    // 禁用项不响应
+    if (m_disabledItems.contains(m_selectedIndex)) return;
+
     switch (m_type) {
     case MAIN_MENU:
         switch (m_selectedIndex) {
@@ -83,8 +95,7 @@ void Menu::confirmSelection()
         switch (m_selectedIndex) {
         case 0: emit resumeGame(); break;
         case 1: emit saveGame(); break;
-        case 2: emit loadGame(); break;
-        case 3: emit quitGame(); break;
+        case 2: emit quitGame(); break;
         }
         break;
 
@@ -147,6 +158,9 @@ void Menu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         if (i == m_selectedIndex) {
             painter->setBrush(QColor(0x4a, 0x55, 0x68));
             painter->setPen(QColor(0xff, 0xcc, 0x00));
+        } else if (m_disabledItems.contains(i)) {
+            painter->setBrush(QColor(0x20, 0x25, 0x30));
+            painter->setPen(QColor(0x66, 0x66, 0x66));
         } else {
             painter->setBrush(QColor(0x2d, 0x37, 0x48));
             painter->setPen(QColor(Qt::white));
@@ -167,6 +181,7 @@ void Menu::mousePressEvent(QGraphicsSceneMouseEvent *event)
     QPointF pos = event->pos();
 
     for (int i = 0; i < m_menuItems.size(); ++i) {
+        if (m_disabledItems.contains(i)) continue;
         if (getItemRect(i).contains(pos)) {
             m_selectedIndex = i;
             confirmSelection();
@@ -185,8 +200,8 @@ void Menu::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
     QPointF pos = event->pos();
 
-    // 检查鼠标悬停在哪个菜单项上
     for (int i = 0; i < m_menuItems.size(); ++i) {
+        if (m_disabledItems.contains(i)) continue;
         if (getItemRect(i).contains(pos)) {
             if (m_selectedIndex != i) {
                 m_selectedIndex = i;
@@ -197,4 +212,22 @@ void Menu::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     }
 
     QGraphicsItem::mouseMoveEvent(event);
+}
+
+void Menu::wheelEvent(QGraphicsSceneWheelEvent *event)
+{
+    if (!m_isVisible) return;
+    if (event->delta() > 0)
+        selectPrevious();
+    else
+        selectNext();
+}
+
+void Menu::setItemDisabled(int index, bool disabled)
+{
+    if (disabled)
+        m_disabledItems.insert(index);
+    else
+        m_disabledItems.remove(index);
+    update();
 }

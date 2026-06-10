@@ -5,56 +5,65 @@
 
 Enemy::Enemy(EnemyType type, QGraphicsItem *parent)
     : QGraphicsPixmapItem(parent)
-    , m_type(type), m_state(IDLE)
-    , m_attackTimer(0), m_patrolTimer(0)
-    , m_patrolDirX(1), m_patrolDirY(0)
+    , m_type(type), m_state(CHASE)
+    , m_attackRange(40)
+    , m_attackTimer(0)
 {
-    QString imagePath;
-    switch (type) {
-    case GOBLIN:   imagePath = ":/resources/images/entities/goblin.png"; break;
-    case SLIME:    imagePath = ":/resources/images/entities/slime.png"; break;
-    case SKELETON: imagePath = ":/resources/images/entities/skeleton.png"; break;
-    case BOSS:     imagePath = ":/resources/images/entities/boss.png"; break;
-    }
-
-    QPixmap enemyPixmap(imagePath);
-    bool imageLoaded = !enemyPixmap.isNull();
+    QPixmap enemyPixmap;
 
     switch (type) {
     case GOBLIN:
         m_maxHealth = 50; m_attack = 8; m_defense = 3;
         m_expReward = 20; m_goldReward = 10;
-        m_moveSpeed = 1.5; m_attackInterval = 1.5;
-        if (!imageLoaded) { enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0x8b, 0x45, 0x13)); }
+        m_moveSpeed = 1.5; m_attackInterval = 0.8;
+        m_attackRange = 40;
+        enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0x8b, 0x45, 0x13));
         break;
     case SLIME:
         m_maxHealth = 20; m_attack = 5; m_defense = 1;
         m_expReward = 10; m_goldReward = 5;
-        m_moveSpeed = 1.0; m_attackInterval = 2.0;
-        if (!imageLoaded) { enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0x22, 0x8b, 0x22)); }
+        m_moveSpeed = 1.0; m_attackInterval = 1.0;
+        m_attackRange = 35;
+        enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0x22, 0x8b, 0x22));
         break;
     case SKELETON:
         m_maxHealth = 80; m_attack = 12; m_defense = 5;
         m_expReward = 35; m_goldReward = 20;
-        m_moveSpeed = 1.2; m_attackInterval = 1.2;
-        if (!imageLoaded) { enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0xc0, 0xc0, 0xc0)); }
+        m_moveSpeed = 1.2; m_attackInterval = 0.7;
+        m_attackRange = 45;
+        enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0xc0, 0xc0, 0xc0));
         break;
-    case BOSS:
-        m_maxHealth = 300; m_attack = 25; m_defense = 15;
-        m_expReward = 200; m_goldReward = 100;
-        m_moveSpeed = 0.8; m_attackInterval = 1.0;
-        if (!imageLoaded) { enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0x8b, 0x00, 0x00)); }
+    case BAT:
+        m_maxHealth = 15; m_attack = 15; m_defense = 0;
+        m_expReward = 25; m_goldReward = 12;
+        m_moveSpeed = 3.0; m_attackInterval = 0.5;
+        m_attackRange = 35;
+        enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0x4b, 0x00, 0x82));
+        break;
+    case GOBLIN_ELITE:
+        m_maxHealth = 200; m_attack = 20; m_defense = 10;
+        m_expReward = 80; m_goldReward = 40;
+        m_moveSpeed = 1.0; m_attackInterval = 1.0;
+        m_attackRange = 48;
+        enemyPixmap = QPixmap(48, 48); enemyPixmap.fill(QColor(0xff, 0x44, 0x00));
+        break;
+    case DRAGON:
+        m_maxHealth = 500; m_attack = 30; m_defense = 20;
+        m_expReward = 300; m_goldReward = 100;
+        m_moveSpeed = 0.6; m_attackInterval = 1.0;
+        m_attackRange = 55;
+        enemyPixmap = QPixmap(64, 64); enemyPixmap.fill(QColor(0xcc, 0x00, 0x00));
         break;
     }
 
     setPixmap(enemyPixmap);
     m_health = m_maxHealth;
     setOffset(-boundingRect().width() / 2, -boundingRect().height());
-    m_patrolOrigin = pos();
 }
 
 Enemy::~Enemy() {}
 
+// ---- 属性 ----
 int Enemy::health() const { return m_health; }
 int Enemy::maxHealth() const { return m_maxHealth; }
 int Enemy::attack() const { return m_attack; }
@@ -64,13 +73,24 @@ int Enemy::goldReward() const { return m_goldReward; }
 Enemy::EnemyType Enemy::enemyType() const { return m_type; }
 Enemy::State Enemy::state() const { return m_state; }
 
+void Enemy::setHealth(int v)     { m_health = v; }
+void Enemy::setMaxHealth(int v)  { m_maxHealth = v; }
+void Enemy::setAttack(int v)     { m_attack = v; }
+void Enemy::setDefense(int v)    { m_defense = v; }
+void Enemy::setExpReward(int v)  { m_expReward = v; }
+void Enemy::setGoldReward(int v) { m_goldReward = v; }
+void Enemy::setMoveSpeed(float v){ m_moveSpeed = v; }
+void Enemy::setAttackRange(float v){ m_attackRange = v; }
+
 QString Enemy::name() const
 {
     switch (m_type) {
     case GOBLIN:   return "哥布林";
     case SLIME:    return "史莱姆";
     case SKELETON: return "骷髅兵";
-    case BOSS:     return "BOSS";
+    case BAT:      return "蝙蝠";
+    case GOBLIN_ELITE: return "精英哥布林";
+    case DRAGON:   return "龙";
     default:       return "未知";
     }
 }
@@ -79,86 +99,71 @@ void Enemy::takeDamage(int damage)
 {
     int finalDamage = qMax(0, damage - m_defense);
     m_health -= finalDamage;
-
-    // 受伤后进入追击状态
-    if (m_health > 0 && m_state != ATTACKING) {
-        m_state = CHASE;
-    }
+    if (m_health > 0) m_state = CHASE;
 }
 
 void Enemy::update(qreal deltaTime)
 {
-    m_attackTimer += deltaTime;
+    Q_UNUSED(deltaTime);
 }
 
-void Enemy::updateAI(Player* player, qreal deltaTime)
+void Enemy::updateAI(Player* player, QList<Enemy*> otherEnemies, qreal deltaTime)
 {
     if (!isAlive()) {
-        if (m_state != DEAD) {
-            m_state = DEAD;
-            hide();
-        }
+        if (m_state != DEAD) { m_state = DEAD; hide(); }
         return;
     }
-
     if (!player) return;
 
     m_attackTimer += deltaTime;
-    m_patrolTimer += deltaTime;
 
     QPointF playerPos = player->pos();
     QPointF myPos = pos();
-    qreal dist = std::sqrt(std::pow(playerPos.x() - myPos.x(), 2) +
-                           std::pow(playerPos.y() - myPos.y(), 2));
-
-    const qreal CHASE_RANGE = 120;
-    const qreal ATTACK_RANGE = 40;
-    const qreal PATROL_RANGE = 60;
+    qreal dx = playerPos.x() - myPos.x();
+    qreal dy = playerPos.y() - myPos.y();
+    qreal dist = std::sqrt(dx*dx + dy*dy);
 
     switch (m_state) {
-    case IDLE:
-        if (dist < CHASE_RANGE) m_state = CHASE;
-        else if (m_patrolTimer > 3.0) { m_state = PATROL; m_patrolTimer = 0; }
-        break;
-
-    case PATROL: {
-        qreal dx = m_patrolDirX * m_moveSpeed * 0.5 * deltaTime * 60;
-        qreal dy = m_patrolDirY * m_moveSpeed * 0.5 * deltaTime * 60;
-        setPos(myPos.x() + dx, myPos.y() + dy);
-
-        qreal patrolDist = std::sqrt(std::pow(pos().x() - m_patrolOrigin.x(), 2) +
-                                     std::pow(pos().y() - m_patrolOrigin.y(), 2));
-        if (patrolDist > PATROL_RANGE || m_patrolTimer > 2.0) {
-            m_patrolDirX = (std::rand() % 3) - 1;
-            m_patrolDirY = (std::rand() % 3) - 1;
-            m_patrolTimer = 0;
-            m_state = IDLE;
-        }
-        if (dist < CHASE_RANGE) m_state = CHASE;
-        break;
-    }
-
     case CHASE:
-        if (dist < ATTACK_RANGE) {
+        if (dist < m_attackRange) {
             m_state = ATTACKING;
+            m_attackTimer = m_attackInterval; // 接触立即攻击
         } else {
-            qreal dx = (playerPos.x() > myPos.x() ? 1 : -1) * m_moveSpeed * deltaTime * 60;
-            qreal dy = (playerPos.y() > myPos.y() ? 1 : -1) * m_moveSpeed * deltaTime * 60;
-            setPos(myPos.x() + dx, myPos.y() + dy);
+            // 直接奔向玩家 + 分离力
+            QPointF toPlayer = (dist > 0.001f)
+                ? QPointF(dx / dist, dy / dist)
+                : QPointF(0, 0);
+
+            QPointF separation(0, 0);
+            for (Enemy* other : otherEnemies) {
+                if (other == this || !other->isAlive()) continue;
+                QPointF diff = myPos - other->pos();
+                qreal sepDist = std::sqrt(diff.x()*diff.x() + diff.y()*diff.y());
+                if (sepDist < 25 && sepDist > 0.001f) {
+                    qreal force = (25 - sepDist) / 25 * 2.0f;
+                    separation += QPointF(diff.x() / sepDist * force,
+                                          diff.y() / sepDist * force);
+                }
+            }
+
+            QPointF velocity = toPlayer + separation;
+            qreal vLen = std::sqrt(velocity.x()*velocity.x() + velocity.y()*velocity.y());
+            if (vLen > 0.001f) {
+                velocity = velocity / vLen * m_moveSpeed * deltaTime * 60;
+            }
+            setPos(myPos.x() + velocity.x(), myPos.y() + velocity.y());
         }
-        if (dist > CHASE_RANGE * 1.5) m_state = IDLE;
         break;
 
     case ATTACKING:
-        if (m_attackTimer >= m_attackInterval && dist < ATTACK_RANGE) {
+        if (m_attackTimer >= m_attackInterval && dist < m_attackRange) {
             player->takeDamage(m_attack);
             m_attackTimer = 0;
         }
-        if (dist > ATTACK_RANGE * 1.5) m_state = CHASE;
+        if (dist > m_attackRange * 1.5f) m_state = CHASE;
         break;
 
-    case DEAD:
-        break;
+    default: break;
     }
 }
 

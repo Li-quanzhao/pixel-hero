@@ -1,0 +1,74 @@
+{
+  "skills": [
+    {
+      "id": "fireball",
+      "name": "火球术",
+      "type": "active",
+      "description": "向最近敌人发射火球",
+      "maxLevel": 5,
+      "levels": [
+        {"damage": 15, "cooldown": 2.0, "extra": 1, "desc": "伤害15，冷却2秒"},
+        {"damage": 25, "cooldown": 1.8, "extra": 2, "desc": "伤害25，冷却1.8秒，2发"},
+        {"damage": 35, "cooldown": 1.6, "extra": 2, "desc": "伤害35，冷却1.6秒"},
+        {"damage": 50, "cooldown": 1.4, "extra": 3, "desc": "伤害50，冷却1.4秒，3发"},
+        {"damage": 70, "cooldown": 1.0, "extra": 3, "desc": "伤害70，冷却1秒"}
+      ]
+    },
+    {
+      "id": "lightning",
+      "name": "闪电链",
+      "type": "active",
+      "description": "连锁攻击多个敌人",
+      "maxLevel": 5,
+      "levels": [
+        {"damage": 20, "cooldown": 2.5, "extra": 2, "desc": "伤害20，连锁2个敌人"},
+        {"damage": 30, "cooldown": 2.3, "extra": 3, "desc": "伤害30，连锁3个"},
+        {"damage": 45, "cooldown": 2.0, "extra": 4, "desc": "伤害45，连锁4个"},
+        {"damage": 60, "cooldown": 1.8, "extra": 5, "desc": "伤害60，连锁5个"},
+        {"damage": 80, "cooldown": 1.5, "extra": 6, "desc": "伤害80，连锁6个"}
+      ]
+    },
+    {
+      "id": "frost_nova",
+      "name": "冰霜新星",
+      "type": "active",
+      "description": "范围伤害+减速",
+      "maxLevel": 5,
+      "levels": [
+        {"damage": 10, "cooldown": 4.0, "extra": 80, "desc": "伤害10，范围80px"},
+        {"damage": 20, "cooldown": 3.5, "extra": 100, "desc": "伤害20，范围100px"},
+        {"damage": 30, "cooldown": 3.0, "extra": 120, "desc": "伤害30，范围120px"},
+        {"damage": 45, "cooldown": 2.5, "extra": 140, "desc": "伤害45，范围140px"},
+        {"damage": 60, "cooldown": 2.0, "extra": 160, "desc": "伤害60，范围160px"}
+      ]
+    },
+    {
+      "id": "attack_boost",
+      "name": "攻击强化",
+      "type": "passive",
+      "description": "永久提升攻击力",
+      "maxLevel": 5,
+      "levels": [
+        {"damage": 0, "cooldown": 0, "extra": 5, "desc": "攻击力+5"},
+        {"damage": 0, "cooldown": 0, "extra": 10, "desc": "攻击力+10"},
+        {"damage": 0, "cooldown": 0, "extra": 18, "desc": "攻击力+18"},
+        {"damage": 0, "cooldown": 0, "extra": 30, "desc": "攻击力+30"},
+        {"damage": 0, "cooldown": 0, "extra": 50, "desc": "攻击力+50"}
+      ]
+    },
+    {
+      "id": "speed_boost",
+      "name": "敏捷",
+      "type": "passive",
+      "description": "永久提升移动速度",
+      "maxLevel": 5,
+      "levels": [
+        {"damage": 0, "cooldown": 0, "extra": 1, "desc": "速度+1"},
+        {"damage": 0, "cooldown": 0, "extra": 2, "desc": "速度+2"},
+        {"damage": 0, "cooldown": 0, "extra": 3, "desc": "速度+3"},
+        {"damage": 0, "cooldown": 0, "extra": 5, "desc": "速度+5"},
+        {"damage": 0, "cooldown": 0, "extra": 7, "desc": "速度+7"}
+      ]
+    }
+  ]
+}

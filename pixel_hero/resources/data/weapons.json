@@ -1,0 +1,40 @@
+{
+    "weapons": [
+        {
+            "id": "short_sword",
+            "name": "短剑",
+            "attackBonus": 3,
+            "speedMod": 1.0,
+            "range": 50,
+            "color": "#c0c0c0",
+            "desc": "攻击+3\n攻速正常"
+        },
+        {
+            "id": "long_sword",
+            "name": "长剑",
+            "attackBonus": 8,
+            "speedMod": 0.7,
+            "range": 70,
+            "color": "#ffd700",
+            "desc": "攻击+8\n攻速-30%\n范围更大"
+        },
+        {
+            "id": "staff",
+            "name": "法杖",
+            "attackBonus": 12,
+            "speedMod": 0.5,
+            "range": 90,
+            "color": "#9932cc",
+            "desc": "攻击+12\n攻速-50%\n技能伤害+20%"
+        },
+        {
+            "id": "dagger",
+            "name": "匕首",
+            "attackBonus": 4,
+            "speedMod": 1.5,
+            "range": 40,
+            "color": "#00ff7f",
+            "desc": "攻击+4\n攻速+50%\n移速+10%"
+        }
+    ]
+}
