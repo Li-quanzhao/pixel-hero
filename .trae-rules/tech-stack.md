@@ -71,14 +71,18 @@ QMainWindow → QGraphicsView → QGraphicsScene → QGraphicsPixmapItem
 ```
 pixel_hero/
 ├── src/
+│   ├── config/       # 集中常量 (GameConfig.h)
 │   ├── entities/     # 实体基类 (Player, Enemy)
 │   ├── survival/     # 生存模式所有类
+│   │   └── skills/   # 技能策略子类 (SkillExecutor)
 │   ├── ui/           # UI (Menu)
 │   └── utils/        # 单例工具 (GameData, SaveManager...)
 ├── resources/
-│   └── data/         # JSON 配置 (skills.json, survival_waves.json)
-└── scripts/
-    └── build.bat     # 构建脚本
+│   ├── data/         # JSON 配置 (skills.json, survival_waves.json)
+│   └── png/          # 精灵图资源
+├── scripts/
+│   └── build.bat     # 构建脚本
+└── resources.qrc     # Qt资源文件
 ```
 
 ### 2.3 单例模式
