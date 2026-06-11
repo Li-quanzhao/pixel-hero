@@ -212,6 +212,7 @@ void SurvivalScene::updateGame()
         }
     }
     for (Enemy* enemy : aliveEnemies) {
+        enemy->update(dt);
         enemy->updateAI(m_player, aliveEnemies, dt);
     }
 

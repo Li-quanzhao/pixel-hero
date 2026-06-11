@@ -59,6 +59,7 @@ private:
     qreal m_attackInterval;
 
     QPixmap m_originalPixmap;  // 原始精灵图(受伤闪烁恢复用)
+    int m_flashTimer = 0;      // 闪烁帧计数(帧, ~16ms/帧)
 };
 
 #endif // ENEMY_H

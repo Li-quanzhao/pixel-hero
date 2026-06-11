@@ -101,8 +101,10 @@ void Enemy::takeDamage(int damage)
 {
     int finalDamage = qMax(0, damage - m_defense);
     m_health -= finalDamage;
-    if (m_health > 0) m_state = CHASE;
-    flashHit();
+    if (m_health > 0) {
+        m_state = CHASE;
+        flashHit();  // 仅存活时闪烁，避免 use-after-free
+    }
 }
 
 void Enemy::flashHit()
@@ -117,15 +119,18 @@ void Enemy::flashHit()
     p.fillRect(flash.rect(), QColor(255, 255, 255, 180));
     p.end();
     setPixmap(flash);
-    // 80ms后恢复
-    QTimer::singleShot(80, [this]() {
-        if (isAlive()) setPixmap(m_originalPixmap);
-    });
+    m_flashTimer = 5;  // ~80ms (5帧 × 16ms/帧)
 }
 
 void Enemy::update(qreal deltaTime)
 {
     Q_UNUSED(deltaTime);
+    if (m_flashTimer > 0) {
+        m_flashTimer--;
+        if (m_flashTimer <= 0 && isAlive()) {
+            setPixmap(m_originalPixmap);
+        }
+    }
 }
 
 void Enemy::updateAI(Player* player, QList<Enemy*> otherEnemies, qreal deltaTime)
