@@ -4,6 +4,7 @@
 #include "utils/GameData.h"
 #include "config/GameConfig.h"
 #include "survival/skills/SkillExecutor.h"
+#include "PickupManager.h"
 #include <QPainter>
 #include <QRandomGenerator>
 #include <QLineF>
@@ -42,6 +43,10 @@ void SurvivalScene::initScene()
     m_enemyManager = std::make_unique<pixel_hero::survival::EnemyManager>(
         this, m_waveManager, m_effectManager.get(), this);
     if (m_stats) m_enemyManager->setStats(m_stats);
+
+    // 拾取物管理器
+    m_pickupManager = std::make_unique<pixel_hero::survival::PickupManager>(this, this);
+    m_enemyManager->setPickupManager(m_pickupManager.get());
 
     // HUD
     m_hud = new SurvivalHUD();
@@ -84,14 +89,48 @@ void SurvivalScene::startGame(const QString& characterId, const QString& weaponI
 
 void SurvivalScene::startFromSave(const SurvivalSaveData& data)
 {
-    startGame(data.characterId, data.weaponId);
+    // 先关定时器，防止 updateGame 在初始化期间触发
+    m_gameTimer->stop();
+    m_isPaused = true;
 
+    // 初始化场景（在 apply 之前，因为 initScene 会创建 m_player 等）
+    initScene();
+
+    // 应用角色和武器
+    auto chars = SurvivalPlayer::availableCharacters();
+    for (const auto& c : chars) {
+        if (c.id == data.characterId) {
+            m_player->applyCharacter(c);
+            break;
+        }
+    }
+    const WeaponData* wpn = GameData::instance()->getWeaponById(data.weaponId);
+    if (wpn) m_player->applyWeapon(*wpn);
+
+    // 恢复状态（在启动之前完成，避免 updateGame 读到未初始化数据）
     m_player->setHealth(data.playerHealth);
+    m_player->setMaxHealth(data.playerMaxHealth);
     m_player->setLevel(data.playerLevel);
     m_player->setExp(data.playerExp);
+    m_player->setGold(data.playerGold);
     m_enemyManager->setTotalKills(data.totalKills);
 
+    // 恢复技能
+    for (const auto& [skillId, level] : data.skills) {
+        if (m_player->skillLevel(skillId) > 0)
+            m_player->upgradeSkill(skillId, level);
+        else
+            m_player->addSkill(skillId, level);
+    }
+
+    // 恢复波次状态
+    m_waveManager->start();  // 初始化波次配置
     m_waveManager->restoreState(data.currentWave, data.totalKills, data.elapsedTime);
+
+    // 一切就绪，启动游戏循环
+    m_isStarted = true;
+    m_isPaused = false;
+    m_gameTimer->start();
 }
 
 void SurvivalScene::pauseGame()
@@ -116,7 +155,7 @@ void SurvivalScene::endGame()
     bool isNew = false;
     if (m_stats) {
         m_stats->setWave(wave);
-        m_stats->addKill();
+        if (m_player) m_stats->setGold(m_player->gold());
         isNew = m_stats->isNewRecord();
         m_stats->saveRecord(wave, m_enemyManager ? m_enemyManager->totalKills() : 0,
                             elapsedTime());
@@ -171,6 +210,9 @@ void SurvivalScene::updateGame()
 
     // 5. 敌人管理(扫描+AI+清理) — 一次items()调用
     m_enemyManager->update(dt, m_player);
+
+    // 5.5. 拾取物更新
+    if (m_pickupManager) m_pickupManager->update(dt, m_player);
 
     // 6. 波次更新
     m_waveManager->update(dt);

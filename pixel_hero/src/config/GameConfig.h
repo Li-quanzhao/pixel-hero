@@ -32,6 +32,14 @@ constexpr int   MAX_ALIVE_ENEMIES  = 30;      // 同时存活上限
 constexpr int   FLASH_FRAMES       = 5;       // 受伤闪烁帧数(~80ms)
 constexpr int   FLASH_ALPHA        = 180;     // 闪烁叠加透明度
 
+// 拾取物
+constexpr float PICKUP_MAGNET_RANGE   = 40.0f;   // 磁吸范围(px)
+constexpr float PICKUP_LIFETIME       = 15.0f;   // 生命周期(秒)
+constexpr float PICKUP_BLINK_START    = 3.0f;    // 闪烁开始(剩余秒)
+constexpr float PICKUP_MAGNET_SPEED   = 200.0f;  // 磁吸移动速度(px/s)
+constexpr int   MAX_PICKUPS           = 200;     // 同时存在上限
+constexpr int   HP_DROP_RECOVERY      = 5;       // 血瓶固定恢复量
+
 } // namespace config
 } // namespace pixel_hero
 

@@ -170,13 +170,16 @@ void GameData::initDefaultSkills()
     };
     m_skills.append(lt);
 
-    // frost_nova
+    // frost_nova - 冰弹投射物
     SkillData fn;
-    fn.id = "frost_nova"; fn.name = "冰霜新星"; fn.type = "active"; fn.description = "范围伤害+减速"; fn.maxLevel = 5;
+    fn.id = "frost_nova"; fn.name = "冰霜新星"; fn.type = "active";
+    fn.description = "向最近敌人发射冰弹，命中造成范围伤害"; fn.maxLevel = 5;
     fn.levels = {
-        {10, 4.0f, 80, "范围80px"},  {20, 3.5f, 100, "范围100px"},
-        {30, 3.0f, 120, "范围120px"}, {45, 2.5f, 140, "范围140px"},
-        {60, 2.0f, 160, "范围160px"}
+        {15, 3.5f, 60, "伤害15，爆炸范围60px"},
+        {25, 3.2f, 70, "伤害25，爆炸范围70px"},
+        {40, 2.8f, 80, "伤害40，爆炸范围80px"},
+        {60, 2.4f, 90, "伤害60，爆炸范围90px"},
+        {80, 2.0f, 100, "伤害80，爆炸范围100px"}
     };
     m_skills.append(fn);
 
@@ -197,6 +200,19 @@ void GameData::initDefaultSkills()
         {0, 0, 5, "速度+5"}, {0, 0, 7, "速度+7"}
     };
     m_skills.append(sb);
+
+    // life_drain
+    SkillData ld;
+    ld.id = "life_drain"; ld.name = "生命汲取"; ld.type = "passive";
+    ld.description = "击杀敌人有几率掉落血瓶"; ld.maxLevel = 5;
+    ld.levels = {
+        {0, 0, 10, "10%掉落血瓶，恢复5HP"},
+        {0, 0, 15, "15%掉落血瓶，恢复5HP"},
+        {0, 0, 20, "20%掉落血瓶，恢复5HP"},
+        {0, 0, 25, "25%掉落血瓶，恢复5HP"},
+        {0, 0, 30, "30%掉落血瓶，恢复5HP"}
+    };
+    m_skills.append(ld);
 }
 
 void GameData::initDefaultWaves()

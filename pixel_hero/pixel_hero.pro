@@ -37,6 +37,8 @@ SOURCES += \
     src/survival/EnemyFactory.cpp \
     src/survival/EffectManager.cpp \
     src/survival/EnemyManager.cpp \
+    src/survival/PickupItem.cpp \
+    src/survival/PickupManager.cpp \
     src/survival/skills/SkillExecutor.cpp
 
 HEADERS += \
@@ -62,6 +64,8 @@ HEADERS += \
     src/survival/EnemyFactory.h \
     src/survival/EffectManager.h \
     src/survival/EnemyManager.h \
+    src/survival/PickupItem.h \
+    src/survival/PickupManager.h \
     src/survival/skills/SkillExecutor.h \
     src/config/GameConfig.h
 

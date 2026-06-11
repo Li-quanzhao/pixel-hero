@@ -423,7 +423,7 @@ void GameWindow::showSaveLoadUI(SaveLoadUI::Mode mode)
 
     // 保存请求
     connect(m_saveLoadUI, &SaveLoadUI::saveRequested, this,
-            [this](int slot) {
+            [this, mode](int slot) {
                 // 如果槽位已有存档，覆盖确认
                 if (m_stats->hasSavedGame(slot)) {
                     auto result = QMessageBox::question(this, "覆盖确认",
@@ -431,9 +431,24 @@ void GameWindow::showSaveLoadUI(SaveLoadUI::Mode mode)
                         QMessageBox::Yes | QMessageBox::No);
                     if (result != QMessageBox::Yes) return;
                 }
-                saveCurrentGame(slot);
-                hideSaveLoadUI();
-                showMainMenu();
+                if (saveCurrentGame(slot)) {
+                    hideSaveLoadUI();
+                    if (mode == SaveLoadUI::SAVE_MODE)
+                        resumeGame();
+                    else
+                        showMainMenu();
+                } else {
+                    QString msg = "存档写入失败。\n路径: " + m_stats->savePath(slot);
+                    if (!m_stats->lastError().isEmpty())
+                        msg += "\n错误: " + m_stats->lastError();
+                    QMessageBox::warning(this, "保存失败", msg);
+                    // 不卡住用户，返回暂停菜单
+                    hideSaveLoadUI();
+                    if (mode == SaveLoadUI::SAVE_MODE)
+                        resumeGame();
+                    else
+                        showMainMenu();
+                }
             });
 
     // 读取请求
@@ -468,7 +483,7 @@ void GameWindow::showSaveLoadUI(SaveLoadUI::Mode mode)
 }
 
 // ========================= 存档操作 =========================
-void GameWindow::saveCurrentGame(int slot)
+bool GameWindow::saveCurrentGame(int slot)
 {
     SurvivalSaveData data;
     data.currentWave  = m_survivalScene->waveManager()->currentWave();
@@ -478,6 +493,7 @@ void GameWindow::saveCurrentGame(int slot)
     data.playerHealth = m_survivalScene->player()->health();
     data.playerMaxHealth = m_survivalScene->player()->maxHealth();
     data.playerExp    = m_survivalScene->player()->exp();
+    data.playerGold   = m_survivalScene->player()->gold();
     data.characterId  = m_selectedCharacter;
     data.weaponId     = m_selectedWeapon;
     data.savedAt      = QDateTime::currentDateTime();
@@ -486,8 +502,9 @@ void GameWindow::saveCurrentGame(int slot)
         data.skills.append({as.skillId, as.level});
     }
 
-    m_stats->saveCurrentGame(data, slot);
+    bool ok = m_stats->saveCurrentGame(data, slot);
     setFocus();
+    return ok;
 }
 
 void GameWindow::loadSavedGame(int slot)

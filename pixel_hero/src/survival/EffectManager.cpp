@@ -79,14 +79,37 @@ void EffectManager::showLightning(QPointF from, QPointF to)
 
 void EffectManager::showFrostNova(QPointF center, float radius)
 {
+    showFrostExplosion(center, radius);
+}
+
+void EffectManager::showFrostProjectile(QPointF from, QPointF to)
+{
     if (!m_scene) return;
-    auto* ring1 = m_scene->addEllipse(center.x() - 5, center.y() - 5, 10, 10,
-        QPen(QColor(100, 200, 255, 200), 3), QBrush(Qt::NoBrush));
-    auto* ring2 = m_scene->addEllipse(center.x() - radius, center.y() - radius,
+    QLineF line(from, to);
+    int steps = 6;
+    for (int i = 1; i <= steps; ++i) {
+        QPointF p = line.pointAt(i / qreal(steps));
+        auto* orb = m_scene->addEllipse(-3, -3, 6, 6, Qt::NoPen,
+            QBrush(QColor(80, 180, 240, 200)));
+        orb->setPos(p);
+        removeLater(m_scene, orb, 80 + i * 30, this);
+    }
+    auto* hit = m_scene->addEllipse(-5, -5, 10, 10, Qt::NoPen,
+        QBrush(QColor(100, 200, 255, 220)));
+    hit->setPos(to);
+    removeLater(m_scene, hit, 150, this);
+}
+
+void EffectManager::showFrostExplosion(QPointF center, float radius)
+{
+    if (!m_scene) return;
+    auto* ring = m_scene->addEllipse(center.x() - radius, center.y() - radius,
         radius * 2, radius * 2,
-        QPen(QColor(80, 180, 240, 120), 2), QBrush(Qt::NoBrush));
-    removeLater(m_scene, ring1, 350, this);
-    removeLater(m_scene, ring2, 350, this);
+        QPen(QColor(80, 180, 240, 160), 3), QBrush(QColor(60, 160, 230, 40)));
+    auto* core = m_scene->addEllipse(center.x() - 8, center.y() - 8, 16, 16,
+        Qt::NoPen, QBrush(QColor(160, 220, 255, 180)));
+    removeLater(m_scene, ring, 400, this);
+    removeLater(m_scene, core, 300, this);
 }
 
 } // namespace survival

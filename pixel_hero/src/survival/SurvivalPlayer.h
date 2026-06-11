@@ -49,6 +49,10 @@ public:
     int attack() const override;
     int speed() const override;
 
+    int gold() const { return m_gold; }
+    void addGold(int v) { m_gold += v; }
+    void setGold(int v) { m_gold = v; }
+
     // 帧更新（技能冷却 + 自动释放）
     void update(qreal deltaTime) override;
 
@@ -63,6 +67,7 @@ private:
     int m_passiveAttackBoost;
     int m_passiveSpeedBoost;
     int m_pendingLevelUps;
+    int m_gold;
 
     void recalcPassives();
     void autoCastSkills();

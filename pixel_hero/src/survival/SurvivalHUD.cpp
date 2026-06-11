@@ -37,6 +37,7 @@ void SurvivalHUD::updateHUD()
     m_kills      = m_waveManager ? m_waveManager->totalKills() : 0;
     m_wave       = m_waveManager ? m_waveManager->currentWave() : 0;
     m_timeSeconds= m_waveManager ? static_cast<int>(m_waveManager->elapsedTime()) : 0;
+    m_gold      = m_player ? m_player->gold() : 0;
 
     m_activeSkillNames.clear();
     for (const auto& as : m_player->activeSkills()) {
@@ -96,6 +97,11 @@ void SurvivalHUD::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWid
 
     painter->drawText(QRectF(570, 32, 220, 22), Qt::AlignRight,
                       QString("Wave %1").arg(m_wave));
+
+    // ===== 金币 =====
+    painter->setPen(QColor(0xFF, 0xD7, 0x40));
+    painter->drawText(QRectF(570, 54, 220, 22), Qt::AlignRight,
+                      QString("金币 %1").arg(m_gold));
 
     // ===== 技能列表 =====
     QFont skillFont;

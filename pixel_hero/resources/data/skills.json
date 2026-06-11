@@ -32,14 +32,14 @@
       "id": "frost_nova",
       "name": "冰霜新星",
       "type": "active",
-      "description": "范围伤害+减速",
+      "description": "向最近敌人发射冰弹，命中造成范围伤害",
       "maxLevel": 5,
       "levels": [
-        {"damage": 10, "cooldown": 4.0, "extra": 80, "desc": "伤害10，范围80px"},
-        {"damage": 20, "cooldown": 3.5, "extra": 100, "desc": "伤害20，范围100px"},
-        {"damage": 30, "cooldown": 3.0, "extra": 120, "desc": "伤害30，范围120px"},
-        {"damage": 45, "cooldown": 2.5, "extra": 140, "desc": "伤害45，范围140px"},
-        {"damage": 60, "cooldown": 2.0, "extra": 160, "desc": "伤害60，范围160px"}
+        {"damage": 15, "cooldown": 3.5, "extra": 60, "desc": "伤害15，爆炸范围60px"},
+        {"damage": 25, "cooldown": 3.2, "extra": 70, "desc": "伤害25，爆炸范围70px"},
+        {"damage": 40, "cooldown": 2.8, "extra": 80, "desc": "伤害40，爆炸范围80px"},
+        {"damage": 60, "cooldown": 2.4, "extra": 90, "desc": "伤害60，爆炸范围90px"},
+        {"damage": 80, "cooldown": 2.0, "extra": 100, "desc": "伤害80，爆炸范围100px"}
       ]
     },
     {
@@ -68,6 +68,20 @@
         {"damage": 0, "cooldown": 0, "extra": 3, "desc": "速度+3"},
         {"damage": 0, "cooldown": 0, "extra": 5, "desc": "速度+5"},
         {"damage": 0, "cooldown": 0, "extra": 7, "desc": "速度+7"}
+      ]
+    },
+    {
+      "id": "life_drain",
+      "name": "生命汲取",
+      "type": "passive",
+      "description": "击杀敌人有几率掉落血瓶",
+      "maxLevel": 5,
+      "levels": [
+        {"damage": 0, "cooldown": 0, "extra": 10, "desc": "10%掉落血瓶，恢复5HP"},
+        {"damage": 0, "cooldown": 0, "extra": 15, "desc": "15%掉落血瓶，恢复5HP"},
+        {"damage": 0, "cooldown": 0, "extra": 20, "desc": "20%掉落血瓶，恢复5HP"},
+        {"damage": 0, "cooldown": 0, "extra": 25, "desc": "25%掉落血瓶，恢复5HP"},
+        {"damage": 0, "cooldown": 0, "extra": 30, "desc": "30%掉落血瓶，恢复5HP"}
       ]
     }
   ]

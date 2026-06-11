@@ -14,6 +14,14 @@
 struct SurvivalSaveData;
 class SurvivalStats;
 
+namespace pixel_hero {
+namespace survival {
+class EffectManager;
+class EnemyManager;
+class PickupManager;
+}
+}
+
 class SurvivalScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -54,6 +62,7 @@ private:
 
     std::unique_ptr<pixel_hero::survival::EffectManager> m_effectManager;
     std::unique_ptr<pixel_hero::survival::EnemyManager>   m_enemyManager;
+    std::unique_ptr<pixel_hero::survival::PickupManager>  m_pickupManager;
     bool m_isPaused = false;
     bool m_isStarted = false;
 

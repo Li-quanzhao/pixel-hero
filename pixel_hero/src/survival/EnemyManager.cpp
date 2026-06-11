@@ -3,6 +3,7 @@
 #include "SurvivalPlayer.h"
 #include "WaveManager.h"
 #include "EffectManager.h"
+#include "PickupManager.h"
 #include "SurvivalStats.h"
 #include "config/GameConfig.h"
 #include <QLineF>
@@ -41,8 +42,8 @@ void EnemyManager::update(qreal dt, SurvivalPlayer* player)
         e->updateAI(player, enemies, dt);
     }
 
-    // 清理死亡
-    cleanupDead(player);
+    // 清理死亡(传入已扫描的列表避免O(n)二次扫描)
+    cleanupDead(player, items);
 }
 
 QList<Enemy*> EnemyManager::aliveEnemies() const
@@ -73,10 +74,9 @@ Enemy* EnemyManager::findNearest(QPointF pos, qreal range) const
     return nearest;
 }
 
-void EnemyManager::cleanupDead(SurvivalPlayer* player)
+void EnemyManager::cleanupDead(SurvivalPlayer* player, const QList<QGraphicsItem*>& items)
 {
     if (!m_scene) return;
-    QList<QGraphicsItem*> items = m_scene->items();
     for (QGraphicsItem* item : items) {
         Enemy* enemy = dynamic_cast<Enemy*>(item);
         if (!enemy || enemy->isAlive()) continue;
@@ -85,6 +85,14 @@ void EnemyManager::cleanupDead(SurvivalPlayer* player)
         m_totalKills++;
         m_waveManager->addKill();
         if (m_stats) m_stats->addKill();
+
+        // 生成掉落物(在移除之前获取位置)
+        if (m_pickupManager) {
+            m_pickupManager->spawnPickups(enemy->pos(),
+                                          static_cast<int>(enemy->enemyType()),
+                                          player);
+        }
+
         m_scene->removeItem(enemy);
         delete enemy;
     }

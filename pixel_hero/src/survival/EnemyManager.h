@@ -15,6 +15,7 @@ namespace pixel_hero {
 namespace survival {
 
 class EffectManager;
+class PickupManager;
 
 class EnemyManager : public QObject
 {
@@ -29,6 +30,7 @@ public:
     int totalKills() const { return m_totalKills; }
     void setTotalKills(int v) { m_totalKills = v; }
     void setStats(::SurvivalStats* s) { m_stats = s; }
+    void setPickupManager(PickupManager* pm) { m_pickupManager = pm; }
 
     ::Enemy* findNearest(QPointF pos, qreal range) const;
 
@@ -36,10 +38,11 @@ private:
     QGraphicsScene*  m_scene;
     ::WaveManager*   m_waveManager;
     EffectManager*   m_effectManager;
+    PickupManager*   m_pickupManager = nullptr;
     ::SurvivalStats* m_stats = nullptr;
     int              m_totalKills = 0;
 
-    void cleanupDead(::SurvivalPlayer* player);
+    void cleanupDead(::SurvivalPlayer* player, const QList<QGraphicsItem*>& items);
 };
 
 } // namespace survival

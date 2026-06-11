@@ -17,6 +17,7 @@ struct SurvivalSaveData {
     QString characterId     = "warrior";
     QString weaponId        = "short_sword";
     QList<QPair<QString,int>> skills;
+    int playerGold = 0;
     QDateTime savedAt;
 };
 

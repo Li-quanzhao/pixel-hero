@@ -19,7 +19,9 @@ public:
     
     int currentWave() const   { return m_currentWave; }
     int kills() const         { return m_kills; }
+    int gold() const          { return m_gold; }
     float elapsedTime() const { return m_elapsedTime; }
+    void setGold(int g)       { m_gold = g; }
 
     // 记录
     bool isNewRecord() const;
@@ -34,19 +36,22 @@ public:
     bool hasSavedGame(int slot) const;
     void deleteSavedGame(int slot);
     QList<int> allSavedSlots() const;  // 哪些槽有存档
+    QString savePath(int slot) const;
+    QString lastError() const { return m_lastError; }
 
 private:
     int    m_kills;
     int    m_currentWave;
     float  m_elapsedTime;
+    int    m_gold;
 
     int    m_recordWave;
     int    m_recordKills;
     float  m_recordTime;
 
-    void loadRecord();
+    QString m_lastError;
 
-    QString savePath(int slot) const;
+    void loadRecord();
     QString recordPath() const;
 };
 

@@ -79,12 +79,33 @@ void FrostNovaExecutor::execute(const SurvivalPlayer::ActiveSkill& skill,
                                 EffectManager* fx)
 {
     QList<Enemy*> enemies = enemyMgr->aliveEnemies();
-    fx->showFrostNova(playerPos, static_cast<float>(skill.extra));
+    if (enemies.isEmpty()) return;
 
+    // 找最近敌人
+    Enemy* nearest = nullptr;
+    qreal minDist = 99999;
     for (Enemy* e : enemies) {
         qreal d = QLineF(playerPos, e->pos()).length();
-        if (d <= skill.extra) e->takeDamage(skill.damage);
+        if (d < minDist) { minDist = d; nearest = e; }
     }
+    if (!nearest) return;
+
+    // 冰弹飞行特效
+    fx->showFrostProjectile(playerPos, nearest->pos());
+
+    // 命中伤害 + 溅射伤害
+    QPointF hitPos = nearest->pos();
+    float radius = static_cast<float>(skill.extra);
+    nearest->takeDamage(skill.damage);
+
+    for (Enemy* e : enemies) {
+        if (e == nearest) continue;
+        qreal d = QLineF(hitPos, e->pos()).length();
+        if (d <= radius) e->takeDamage(skill.damage);
+    }
+
+    // 爆炸特效
+    fx->showFrostExplosion(hitPos, radius);
 }
 
 } // namespace survival

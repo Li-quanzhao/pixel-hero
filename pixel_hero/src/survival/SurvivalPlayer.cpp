@@ -19,6 +19,7 @@ SurvivalPlayer::SurvivalPlayer(QGraphicsItem* parent)
     , m_passiveAttackBoost(0)
     , m_passiveSpeedBoost(0)
     , m_pendingLevelUps(0)
+    , m_gold(0)
 {
     setHealth(100); setMaxHealth(100);
     setAttack(10); setDefense(3); setSpeed(3);

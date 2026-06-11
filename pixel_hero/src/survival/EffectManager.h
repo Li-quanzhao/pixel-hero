@@ -19,6 +19,8 @@ public:
     void showFireball(QPointF from, QPointF to);
     void showLightning(QPointF from, QPointF to);
     void showFrostNova(QPointF center, float radius);
+    void showFrostProjectile(QPointF from, QPointF to);
+    void showFrostExplosion(QPointF center, float radius);
 
 private:
     QPointer<QGraphicsScene> m_scene;

@@ -22,7 +22,8 @@ int main(int argc, char *argv[])
     std::srand(static_cast<unsigned>(std::time(nullptr)));
 
     QApplication app(argc, argv);
-    
+    app.setApplicationName("PixelHero");
+    app.setOrganizationName("PixelHero");
     GameWindow window;
     window.show();
     

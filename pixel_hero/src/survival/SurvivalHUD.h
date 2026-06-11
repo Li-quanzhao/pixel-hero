@@ -37,6 +37,7 @@ private:
     int     m_wave;
     int     m_kills;
     int     m_timeSeconds;
+    int     m_gold;
     QStringList m_activeSkillNames;
     bool    m_showLevelUpBanner = false;
 };

@@ -73,7 +73,7 @@ private:
     void gameOver(int wave, int kills, float time, bool isNewRecord);
 
     // 存档
-    void saveCurrentGame(int slot);
+    bool saveCurrentGame(int slot);
     void loadSavedGame(int slot);
     void resumeSavedGame(int slot);
 };

@@ -4,13 +4,14 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
-#include <QStandardPaths>
 #include <QDir>
 #include <QDateTime>
+#include <QCoreApplication>
 
 SurvivalStats::SurvivalStats(QObject* parent)
     : QObject(parent)
     , m_kills(0), m_currentWave(0), m_elapsedTime(0)
+    , m_gold(0)
     , m_recordWave(0), m_recordKills(0), m_recordTime(0)
 {
     loadRecord();
@@ -54,6 +55,9 @@ void SurvivalStats::loadRecord()
 
 bool SurvivalStats::saveCurrentGame(const SurvivalSaveData& data, int slot)
 {
+    QString path = savePath(slot);
+    if (path.isEmpty()) return false;
+
     QJsonObject obj;
     obj["wave"]  = data.currentWave;
     obj["kills"] = data.totalKills;
@@ -64,6 +68,7 @@ bool SurvivalStats::saveCurrentGame(const SurvivalSaveData& data, int slot)
     obj["exp"]   = data.playerExp;
     obj["character"] = data.characterId;
     obj["weapon"]    = data.weaponId;
+    obj["gold"] = data.playerGold;
     obj["savedAt"]   = QDateTime::currentDateTime().toString(Qt::ISODate);
 
     QJsonArray skillsArr;
@@ -75,12 +80,14 @@ bool SurvivalStats::saveCurrentGame(const SurvivalSaveData& data, int slot)
     }
     obj["skills"] = skillsArr;
 
-    QDir().mkpath(QFileInfo(savePath(slot)).absolutePath());
-    QFile file(savePath(slot));
+    QDir().mkpath(QFileInfo(path).absolutePath());
+    QFile file(path);
     if (file.open(QIODevice::WriteOnly)) {
         file.write(QJsonDocument(obj).toJson());
+        file.close();
         return true;
     }
+    m_lastError = file.errorString();
     return false;
 }
 
@@ -100,6 +107,7 @@ bool SurvivalStats::loadSavedGame(SurvivalSaveData& data, int slot)
     data.playerExp    = obj["exp"].toInt();
     data.characterId  = obj["character"].toString("warrior");
     data.weaponId     = obj["weapon"].toString("short_sword");
+    data.playerGold   = obj["gold"].toInt(0);
     data.savedAt      = QDateTime::fromString(obj["savedAt"].toString(), Qt::ISODate);
 
     data.skills.clear();
@@ -132,12 +140,21 @@ QList<int> SurvivalStats::allSavedSlots() const
 
 QString SurvivalStats::savePath(int slot) const
 {
-    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
-           + QString("/survival_save_%1.json").arg(slot);
+    static const QString dir = []() -> QString {
+        // 优先 exe 同目录 saves/ — 开发环境100%可写
+        QString d = QCoreApplication::applicationDirPath() + "/saves";
+        QDir().mkpath(d + "/PixelHero");
+        return d + "/PixelHero";
+    }();
+    return dir + QString("/survival_save_%1.json").arg(slot);
 }
 
 QString SurvivalStats::recordPath() const
 {
-    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
-           + "/survival_record.json";
+    static const QString dir = []() -> QString {
+        QString d = QCoreApplication::applicationDirPath() + "/saves";
+        QDir().mkpath(d + "/PixelHero");
+        return d + "/PixelHero";
+    }();
+    return dir + "/survival_record.json";
 }
