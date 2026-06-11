@@ -1,8 +1,8 @@
 # 生存割草模式 — FINAL 项目总结报告
 
 **项目**: 像素勇者 (Pixel Hero Adventure)
-**文档版本**: FINAL V2.0
-**日期**: 2026-06-10
+**文档版本**: FINAL V3.1
+**日期**: 2026-06-11
 **阶段**: 阶段6 — 评估阶段 (Assess)
 
 ---
@@ -162,7 +162,19 @@ main.cpp
 
 ## 七、已知问题
 
-**全部已修复，无已知问题。** 所有 P0/P1/P2 缺陷已在 V2.0 中解决。
+### V2.0 已修复
+所有原始 P0/P1/P2 缺陷已在 V2.0 中解决。
+
+### V3.0 grill-me 审查发现 (2026-06-11)
+
+| 级别 | # | 问题 | 状态 |
+|:--:|:--:|------|:--:|
+| P0 | 1 | UpgradeUI 的 A/S/D 键映射与 WASD 移动冲突 | ✅ 已修复 |
+| P0 | 2 | 各界面鼠标确认行为不一致 | ✅ 已修复 |
+| P1 | 1 | GameOver 使用原生 QMessageBox | ⏳ 待处理 |
+| P1 | 2 | UpgradeUI 无法跳过/取消 | ⏳ 待处理 |
+| P1 | 3 | 导航键方向不统一 | ✅ P0-1修复后自然解决 |
+| P1 | 4 | SaveLoadUI 空槽静默失败 | ✅ V3.1 基类重构顺带修复 |
 
 ---
 
@@ -200,7 +212,77 @@ main.cpp
 
 ---
 
-## 九、构建命令
+## 九、V3.0 P0 修复详情 (2026-06-11)
+
+### P0-1: UpgradeUI 移除 A/S/D 键映射冲突
+
+**文件**: `src/survival/UpgradeUI.cpp`
+
+**问题**: 游戏中 A/S/D = 移动，升级界面 A/S/D = 选择技能，认知冲突导致误操作。
+
+**修复**: 删除 `Qt::Key_A`, `Qt::Key_S`, `Qt::Key_D` 映射，仅保留 `Qt::Key_1/2/3` 数字键和 `Qt::Key_Left/Right` 方向键。
+
+### P0-2: 统一鼠标确认行为
+
+**文件**: `src/survival/UpgradeUI.cpp`
+
+**问题**: Menu 单击即确认、卡片选择 UI 点两次确认、存档 UI 点选后需 Enter——三种不同逻辑。
+
+**统一规则**:
+| 界面类型 | 鼠标行为 |
+|---------|---------|
+| 列表菜单 (Menu) | 单击 = 确认 (标准行为) |
+| 卡片选择 (Character/Weapon/Upgrade) | 单击选中 + 再次点击或 Enter 确认 |
+| 存档槽 (SaveLoad) | 单击选中 + Enter 确认 |
+
+**改动**: `UpgradeUI::mousePressEvent` — 从"单击即触发 `selectOption()`"改为"首次点击仅高亮，再次点击同一卡片才触发"。
+
+---
+
+### V3.1 SelectableListBase 基类抽取 (2026-06-11)
+
+**问题**: 5个UI组件(Menu/CharacterSelect/WeaponSelect/UpgradeUI/SaveLoadUI)各自实现了独立的交互逻辑，导致 ~500行重复代码 + 交互行为不一致。
+
+**方案**: 抽取 `SelectableListBase` — `QObject + QGraphicsItem` 基类，统一管理公共交互逻辑。
+
+**基类提供**:
+| 功能 | 方法 |
+|------|------|
+| 选中状态 | `m_selectedIndex`, `selectedIndex()`, `setSelectedIndex()` |
+| 可见性 | `m_visible`, `isVisible()`, `appear()`, `dismiss()` |
+| 导航(跳过禁用项) | `selectPrev()`, `selectNext()`, 支持循环/非循环 |
+| 禁用管理 | `setItemDisabled()`, `isItemDisabled()` |
+| 确认机制 | `confirm()` → `onConfirm()` + `confirmed(int)` 信号 |
+| 键盘事件 | W/↑/A/← = prev, S/↓/D/→ = next, Enter/Space = confirm |
+| 鼠标事件 | 统一支持 `ClickToConfirm`(菜单) 和 `ClickToSelect`(卡片) |
+| 滚轮事件 | 上下滚动 = prev/next |
+| 扩展钩子 | `handleExtraKey(int)` 子类可处理额外按键 |
+
+**子类只需实现**: `paint()` + `itemRect()` + `onConfirm()`
+
+**消除重复代码**: 约 600行 → 200行基类 + 子类各 ~30行交互代码
+
+**顺带修复**:
+- SaveLoadUI LOAD模式: 空槽自动禁用(解决 P1-4 空槽静默失败)
+- 所有卡片类统一为 ClickToSelect 模式
+
+### 文件变更
+
+| 操作 | 文件 |
+|------|------|
+| 新增 | `src/ui/SelectableListBase.h` (94行) |
+| 新增 | `src/ui/SelectableListBase.cpp` (176行) |
+| 重构 | `src/ui/Menu.h/cpp` (继承基类, 移除状态/事件) |
+| 重构 | `src/ui/CharacterSelectUI.h/cpp` (继承基类) |
+| 重构 | `src/ui/WeaponSelectUI.h/cpp` (继承基类) |
+| 重构 | `src/ui/SaveLoadUI.h/cpp` (继承基类+空槽禁用) |
+| 重构 | `src/survival/UpgradeUI.h/cpp` (继承基类, 1/2/3 via handleExtraKey) |
+| 适配 | `src/GameWindow.cpp` (m_menu->show() → appear()) |
+| 配置 | `pixel_hero.pro` (添加新文件) |
+
+---
+
+## 十、构建命令
 
 ```powershell
 # 一键构建+部署+运行
@@ -220,4 +302,4 @@ main.cpp
 
 ---
 
-**文档状态**: ✅ V2.0 完成
+**文档状态**: ✅ V3.1 — P0 已修复 + 基类重构完成，P1 部分修复

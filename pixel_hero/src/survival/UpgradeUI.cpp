@@ -1,62 +1,53 @@
 #include "UpgradeUI.h"
 #include <QPainter>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneWheelEvent>
-#include <QKeyEvent>
-#include <QRandomGenerator>
 
 UpgradeUI::UpgradeUI(QGraphicsItem* parent)
-    : QGraphicsItem(parent)
-    , m_isVisible(false)
-    , m_selectedIndex(0)
+    : SelectableListBase(3, parent)
 {
+    setWrapAround(false);
+    setConfirmMode(ClickToSelect);
     setVisible(false);
-    setZValue(200);
-    setFlag(QGraphicsItem::ItemIsFocusable, true);
-    setAcceptHoverEvents(true);
 }
 
 UpgradeUI::~UpgradeUI() {}
 
-bool UpgradeUI::isVisible() const { return m_isVisible; }
-
-QRectF UpgradeUI::boundingRect() const
-{
-    return QRectF(0, 0, 800, 600);
-}
-
 void UpgradeUI::showUpgrade(const QList<SkillData>& options)
 {
     m_options = options;
-    m_selectedIndex = 0;
-    m_isVisible = true;
-    setVisible(true);
-    update();
+    setItemCount(options.size());
+    appear();  // 从基类继承: 显示+聚焦+更新
 }
 
 void UpgradeUI::hide()
 {
-    m_isVisible = false;
-    setVisible(false);
+    dismiss();  // 从基类继承
 }
 
-void UpgradeUI::selectOption(int index)
-{
-    if (index >= 0 && index < m_options.size()) {
-        m_selectedIndex = index;
-        emit skillSelected(m_options[index].id);
-    }
-}
-
-QRectF UpgradeUI::getCardRect(int index) const
+QRectF UpgradeUI::itemRect(int index) const
 {
     int x = START_X + index * (CARD_WIDTH + CARD_GAP);
     return QRectF(x, START_Y, CARD_WIDTH, CARD_HEIGHT);
 }
 
+void UpgradeUI::onConfirm()
+{
+    if (selectedIndex() < m_options.size())
+        emit skillSelected(m_options[selectedIndex()].id);
+}
+
+bool UpgradeUI::handleExtraKey(int key)
+{
+    switch (key) {
+    case Qt::Key_1: if (0 < m_options.size()) { setSelectedIndex(0); confirm(); } return true;
+    case Qt::Key_2: if (1 < m_options.size()) { setSelectedIndex(1); confirm(); } return true;
+    case Qt::Key_3: if (2 < m_options.size()) { setSelectedIndex(2); confirm(); } return true;
+    default: return false;
+    }
+}
+
 void UpgradeUI::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
-    if (!m_isVisible) return;
+    if (!isVisible()) return;
 
     // 半透明背景
     painter->fillRect(boundingRect(), QColor(0, 0, 0, 160));
@@ -67,7 +58,8 @@ void UpgradeUI::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidge
     titleFont.setPixelSize(22);
     titleFont.setBold(true);
     painter->setFont(titleFont);
-    painter->drawText(QRectF(0, 100, 800, 40), Qt::AlignCenter, "选择升级技能");
+    painter->drawText(QRectF(0, 100, 800, 40), Qt::AlignCenter,
+                      QStringLiteral("选择升级技能"));
 
     QFont nameFont;
     nameFont.setPixelSize(14);
@@ -77,8 +69,8 @@ void UpgradeUI::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidge
     descFont.setPixelSize(11);
 
     for (int i = 0; i < m_options.size(); i++) {
-        QRectF rect = getCardRect(i);
-        bool selected = (i == m_selectedIndex);
+        QRectF rect = itemRect(i);
+        bool selected = (i == selectedIndex());
 
         // 卡片背景
         painter->setPen(QPen(selected ? QColor(0xff, 0xcc, 0x00) : QColor(100, 100, 100), 2));
@@ -92,7 +84,7 @@ void UpgradeUI::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidge
         painter->drawText(rect.adjusted(8, 8, -8, -140), Qt::AlignCenter, sd.name);
 
         // 类型标签
-        QString typeStr = (sd.type == "active") ? "主动" : "被动";
+        QString typeStr = (sd.type == "active") ? QStringLiteral("主动") : QStringLiteral("被动");
         painter->setPen(sd.type == "active" ? QColor(0xff, 0x88, 0x44) : QColor(0x44, 0xaa, 0xff));
         QFont typeFont;
         typeFont.setPixelSize(10);
@@ -103,10 +95,8 @@ void UpgradeUI::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidge
         painter->setPen(QColor(200, 200, 200));
         painter->setFont(descFont);
         QString desc = sd.description + "\n\n";
-        // 检查是否已拥有
-        // (简化处理——显示最高级描述)
         if (sd.levels.isEmpty()) {
-            desc += "已满";
+            desc += QStringLiteral("已满");
         } else {
             desc += sd.levels[0].desc;
         }
@@ -118,53 +108,6 @@ void UpgradeUI::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidge
         keyFont.setPixelSize(10);
         painter->setFont(keyFont);
         painter->drawText(rect.adjusted(8, -30, -8, -8), Qt::AlignCenter,
-                          QString("按 %1 选择").arg(i + 1));
-    }
-}
-
-void UpgradeUI::mousePressEvent(QGraphicsSceneMouseEvent* event)
-{
-    if (!m_isVisible) return;
-    for (int i = 0; i < m_options.size(); i++) {
-        if (getCardRect(i).contains(event->pos())) {
-            selectOption(i);
-            return;
-        }
-    }
-}
-
-void UpgradeUI::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
-{
-    if (!m_isVisible) return;
-    for (int i = 0; i < m_options.size(); i++) {
-        if (getCardRect(i).contains(event->pos())) {
-            if (m_selectedIndex != i) { m_selectedIndex = i; update(); }
-            return;
-        }
-    }
-}
-
-void UpgradeUI::wheelEvent(QGraphicsSceneWheelEvent* event)
-{
-    if (!m_isVisible) return;
-    if (event->delta() > 0)
-        m_selectedIndex = qMax(0, m_selectedIndex - 1);
-    else
-        m_selectedIndex = qMin(m_options.size() - 1, m_selectedIndex + 1);
-    update();
-}
-
-void UpgradeUI::keyPressEvent(QKeyEvent* event)
-{
-    if (!m_isVisible) return;
-
-    switch (event->key()) {
-    case Qt::Key_1: case Qt::Key_A: selectOption(0); break;
-    case Qt::Key_2: case Qt::Key_S: selectOption(1); break;
-    case Qt::Key_3: case Qt::Key_D: selectOption(2); break;
-    case Qt::Key_Left:  m_selectedIndex = qMax(0, m_selectedIndex - 1); update(); break;
-    case Qt::Key_Right: m_selectedIndex = qMin(m_options.size() - 1, m_selectedIndex + 1); update(); break;
-    case Qt::Key_Return: case Qt::Key_Space: selectOption(m_selectedIndex); break;
-    default: break;
+                          QStringLiteral("按 %1 选择").arg(i + 1));
     }
 }

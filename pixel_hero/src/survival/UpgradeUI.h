@@ -5,10 +5,10 @@
 #include <QGraphicsItem>
 #include <QRectF>
 #include <QList>
-#include <QGraphicsSceneWheelEvent>
+#include "SelectableListBase.h"
 #include "utils/GameData.h"
 
-class UpgradeUI : public QObject, public QGraphicsItem
+class UpgradeUI : public SelectableListBase
 {
     Q_OBJECT
 
@@ -18,33 +18,26 @@ public:
 
     void showUpgrade(const QList<SkillData>& options);
     void hide();
-    bool isVisible() const;
 
-    void selectOption(int index);
-
-    QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;
-    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
-    void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
-    void wheelEvent(QGraphicsSceneWheelEvent* event) override;
-    void keyPressEvent(QKeyEvent* event) override;
 
 signals:
     void skillSelected(const QString& skillId);
 
+protected:
+    QRectF itemRect(int index) const override;
+    void onConfirm() override;
+    bool handleExtraKey(int key) override;
+
 private:
-    bool m_isVisible;
     QList<SkillData> m_options;
-    int  m_selectedIndex;
 
-    static const int CARD_WIDTH  = 180;
-    static const int CARD_HEIGHT = 200;
-    static const int CARD_GAP    = 20;
-    static const int START_X     = 110;
-    static const int START_Y     = 160;
-
-    QRectF getCardRect(int index) const;
+    static constexpr int CARD_WIDTH  = 180;
+    static constexpr int CARD_HEIGHT = 200;
+    static constexpr int CARD_GAP    = 20;
+    static constexpr int START_X     = 110;
+    static constexpr int START_Y     = 160;
 };
 
 #endif // UPGRADEUI_H

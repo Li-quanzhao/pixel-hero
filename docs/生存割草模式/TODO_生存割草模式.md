@@ -1,29 +1,29 @@
 # 生存割草模式 — TODO 待办事项
 
 **项目**: 像素勇者 (Pixel Hero Adventure)
-**日期**: 2026-06-10
-**版本**: V2.0
+**日期**: 2026-06-11
+**版本**: V3.1
 
 ---
 
 ## 缺陷状态
 
-**全部 P0/P1/P2 已修复，无已知缺陷。**
+### P0 (已修复)
 
-### 已修复清单
+| 编号 | 问题 | 修复 |
+|:--:|------|------|
+| P0-1 | UpgradeUI A/S/D 键与 WASD 移动冲突 | 删除 A/S/D 映射，仅保留 1/2/3 数字键 |
+| P0-2 | 各界面确认行为不一致 | UpgradeUI 改为"单击选中+再次点击/Enter确认" |
+| — | 5个UI组件交互逻辑重复500行 | 抽取 SelectableListBase 公共基类 |
 
-| 编号 | 级别 | 问题 | 修复 |
-|:--:|:--:|------|------|
-| B1 | P0 | SurvivalPlayer Q_OBJECT缺失 | 无信号，升级由轮询处理 |
-| B2 | P0 | startGame() 重复connect timer | 删除重复connect |
-| B3 | P0 | 升级流程竞态 | pendingLevelUps延迟模式 |
-| F1 | P1 | 读档不检查存档 | Menu::setItemDisabled |
-| F2 | P1 | SurvivalStats kills不同步 | addKill() |
-| E1 | P2 | 读档计时从0开始 | elapsedTime参数 |
-| E2 | P2 | 升级后不恢复游戏 | onSkillSelected末尾resumeGame |
-| — | — | 按键事件被吞噬 | eventFilter返回true |
-| — | — | SelectUI不可见 | viewport.update()强制刷新 |
-| — | — | 缺少DLL无法启动 | dev.bat自动windeployqt |
+### P1 (部分修复)
+
+| 编号 | 问题 | 状态 |
+|:--:|------|:--:|
+| P1-1 | GameOver 使用原生 QMessageBox | ⏳ 待处理 |
+| P1-2 | UpgradeUI 无法跳过/取消 | ⏳ 待处理 |
+| P1-3 | SaveLoadUI 空槽静默失败 | ✅ 基类重构顺带修复(空槽自动禁用) |
+| P1-4 | 升级界面暂停无过渡提示 | ⏳ 待处理 |
 
 ---
 

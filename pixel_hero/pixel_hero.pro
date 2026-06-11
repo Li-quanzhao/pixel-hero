@@ -21,6 +21,7 @@ SOURCES += \
     src/utils/GameData.cpp \
     src/utils/ResourceManager.cpp \
     src/utils/AnimationManager.cpp \
+    src/ui/SelectableListBase.cpp \
     src/ui/Menu.cpp \
     src/ui/CharacterSelectUI.cpp \
     src/ui/WeaponSelectUI.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     src/utils/GameData.h \
     src/utils/ResourceManager.h \
     src/utils/AnimationManager.h \
+    src/ui/SelectableListBase.h \
     src/ui/Menu.h \
     src/ui/CharacterSelectUI.h \
     src/ui/WeaponSelectUI.h \

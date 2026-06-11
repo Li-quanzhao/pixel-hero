@@ -204,7 +204,7 @@ void GameWindow::showMainMenu()
     hideMenu();
     m_menu = new Menu(Menu::MAIN_MENU);
     m_survivalScene->addItem(m_menu);
-    m_menu->show();
+    m_menu->appear();
     m_state = GameState::MainMenu;
     m_view->viewport()->update();
     if (m_stats->allSavedSlots().isEmpty()) {
@@ -225,7 +225,7 @@ void GameWindow::showPauseMenu()
     hideMenu();
     m_menu = new Menu(Menu::PAUSE_MENU);
     m_survivalScene->addItem(m_menu);
-    m_menu->show();
+    m_menu->appear();
     m_state = GameState::Paused;
 
     connect(m_menu, &Menu::resumeGame, this, &GameWindow::resumeGame);

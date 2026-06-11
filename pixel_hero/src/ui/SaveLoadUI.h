@@ -4,13 +4,11 @@
 #include <QObject>
 #include <QGraphicsItem>
 #include <QPainter>
-#include <QKeyEvent>
-#include <QGraphicsSceneMouseEvent>
-#include <QWheelEvent>
 #include <QList>
-#include "SurvivalSaveData.h"
+#include "SelectableListBase.h"
+#include "survival/SurvivalSaveData.h"
 
-class SaveLoadUI : public QObject, public QGraphicsItem
+class SaveLoadUI : public SelectableListBase
 {
     Q_OBJECT
 
@@ -26,15 +24,14 @@ public:
                QGraphicsItem* parent = nullptr);
     ~SaveLoadUI();
 
-    void appear();
-    void dismiss();
-
-    void prev();
-    void next();
-    void confirm();
+    // 键盘操作 (保留原方法名兼容 GameWindow eventFilter)
+    void prev() { selectPrev(); }
+    void next() { selectNext(); }
     void del();
 
-    QRectF boundingRect() const override;
+    void appear() override;  // 重写: LOAD模式下禁用空槽
+    void dismiss() override;  // 重写: emit cancelled信号
+
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;
 
@@ -45,15 +42,13 @@ signals:
     void cancelled();
 
 protected:
-    void keyPressEvent(QKeyEvent* event) override;
-    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
-    void wheelEvent(QGraphicsSceneWheelEvent* event) override;
+    QRectF itemRect(int index) const override;
+    void onConfirm() override;
+    bool handleExtraKey(int key) override;
 
 private:
     Mode  m_mode;
     QList<SlotPreview> m_slots;
-    bool  m_visible;
-    int   m_selectedIndex;
 
     static constexpr int SLOT_X   = 40;
     static constexpr int SLOT_W   = 720;
@@ -61,8 +56,6 @@ private:
     static constexpr int SLOT_GAP = 4;
     static constexpr int START_Y  = 54;
 
-    QRectF slotRect(int index) const;
-    int slotAtPos(const QPointF& pos) const;
     void drawOneSlot(QPainter* p, int index, const QRectF& r, bool selected);
     QString skillSummary(const SurvivalSaveData& d) const;
 };

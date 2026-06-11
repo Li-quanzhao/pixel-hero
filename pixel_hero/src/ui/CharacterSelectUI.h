@@ -6,11 +6,9 @@
 #include <QString>
 #include <QList>
 #include <QColor>
-#include <QKeyEvent>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneWheelEvent>
+#include "SelectableListBase.h"
 
-class CharacterSelectUI : public QObject, public QGraphicsItem
+class CharacterSelectUI : public SelectableListBase
 {
     Q_OBJECT
 
@@ -30,15 +28,10 @@ public:
                       QGraphicsItem* parent = nullptr);
     ~CharacterSelectUI();
 
-    void appear();
-    void dismiss();
+    // 键盘操作 (保留为兼容方法，GameWindow eventFilter 调用)
+    void prev()    { selectPrev(); }
+    void next()    { selectNext(); }
 
-    void prev();
-    void next();
-    void confirm();
-    int  selectedIndex() const { return m_selectedIndex; }
-
-    QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;
 
@@ -46,25 +39,20 @@ signals:
     void characterSelected(int index);
 
 protected:
-    void keyPressEvent(QKeyEvent* event) override;
-    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
-    void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
-    void wheelEvent(QGraphicsSceneWheelEvent* event) override;
+    QRectF itemRect(int index) const override;
+    void onConfirm() override;
 
 private:
     QList<CharacterInfo> m_characters;
-    bool  m_visible;
-    int   m_selectedIndex;
 
     static constexpr int CARD_W   = 160;
     static constexpr int CARD_H   = 260;
     static constexpr int CARD_GAP = 24;
     static constexpr int INFO_Y   = 370;
 
-    QRectF cardRect(int index) const;
-    void   drawStatBar(QPainter* p, qreal x, qreal y, int w,
-                       const QString& label, int val, int maxVal,
-                       const QColor& barColor) const;
+    void drawStatBar(QPainter* p, qreal x, qreal y, int w,
+                     const QString& label, int val, int maxVal,
+                     const QColor& barColor) const;
 };
 
 #endif // CHARACTERSELECTUI_H

@@ -1,6 +1,6 @@
 #include "SaveLoadUI.h"
-#include "GameData.h"
-#include "SurvivalPlayer.h"
+#include "utils/GameData.h"
+#include "survival/SurvivalPlayer.h"
 #include <QPainter>
 #include <QGraphicsScene>
 
@@ -14,107 +14,70 @@ static QColor charColor(const SurvivalSaveData& d) {
 
 SaveLoadUI::SaveLoadUI(Mode mode, const QList<SlotPreview>& previews,
                        QGraphicsItem* parent)
-    : QObject(nullptr), QGraphicsItem(parent)
+    : SelectableListBase(5, parent)
     , m_mode(mode), m_slots(previews)
-    , m_visible(false), m_selectedIndex(0)
 {
-    setZValue(200);
-    setFlag(QGraphicsItem::ItemIsFocusable, true);
-    setAcceptHoverEvents(true);
+    setWrapAround(true);
+    setConfirmMode(ClickToSelect);
 }
 
 SaveLoadUI::~SaveLoadUI() {}
 
-// ---- 显示/隐藏 ----
+// ---- 生命周期 (重写: LOAD模式下禁用空槽) ----
 void SaveLoadUI::appear()
 {
-    m_visible = true;
-    m_selectedIndex = 0;
-    show();
-    setFocus();
-    update();
+    // LOAD模式: 将空槽标记为禁用
+    if (m_mode == LOAD_MODE) {
+        for (int i = 0; i < m_slots.size(); ++i) {
+            setItemDisabled(i, !m_slots[i].occupied);
+        }
+    }
+    SelectableListBase::appear();
 }
 
 void SaveLoadUI::dismiss()
 {
     emit cancelled();
-    m_visible = false;
-    hide();
-    clearFocus();
-    update();
+    SelectableListBase::dismiss();
 }
 
-// ---- 键盘导航 ----
-void SaveLoadUI::prev()
-{
-    if (m_visible && m_selectedIndex > 0) {
-        m_selectedIndex--;
-        update();
-    }
-}
-
-void SaveLoadUI::next()
-{
-    if (m_visible && m_selectedIndex < m_slots.size() - 1) {
-        m_selectedIndex++;
-        update();
-    }
-}
-
-// ---- 鼠标导航 ----
-int SaveLoadUI::slotAtPos(const QPointF& pos) const
-{
-    for (int i = 0; i < m_slots.size(); ++i) {
-        if (slotRect(i).contains(pos)) return i;
-    }
-    return -1;
-}
-
-void SaveLoadUI::mousePressEvent(QGraphicsSceneMouseEvent* event)
-{
-    if (!m_visible) return;
-    int idx = slotAtPos(event->pos());
-    if (idx >= 0 && idx < m_slots.size()) {
-        m_selectedIndex = idx;
-        update();
-    }
-}
-
-void SaveLoadUI::wheelEvent(QGraphicsSceneWheelEvent* event)
-{
-    if (!m_visible) return;
-    if (event->delta() > 0)
-        prev();
-    else
-        next();
-}
-
-// ---- 确认/删除 ----
-void SaveLoadUI::confirm()
-{
-    if (!m_visible) return;
-    const auto& sp = m_slots[m_selectedIndex];
-    if (m_mode == SAVE_MODE) {
-        emit saveRequested(m_selectedIndex);
-    } else {
-        if (sp.occupied)
-            emit loadRequested(m_selectedIndex);
-    }
-}
-
+// ---- 删除 ----
 void SaveLoadUI::del()
 {
-    if (!m_visible || m_mode != LOAD_MODE) return;
-    const auto& sp = m_slots[m_selectedIndex];
+    if (!isVisible() || m_mode != LOAD_MODE) return;
+    const auto& sp = m_slots[selectedIndex()];
     if (sp.occupied)
-        emit deleteRequested(m_selectedIndex);
+        emit deleteRequested(selectedIndex());
+}
+
+// ---- 确认 ----
+void SaveLoadUI::onConfirm()
+{
+    const auto& sp = m_slots[selectedIndex()];
+    if (m_mode == SAVE_MODE) {
+        emit saveRequested(selectedIndex());
+    } else {
+        if (sp.occupied)
+            emit loadRequested(selectedIndex());
+    }
+}
+
+// ---- 额外按键 ----
+bool SaveLoadUI::handleExtraKey(int key)
+{
+    if (key == Qt::Key_Delete || key == Qt::Key_Backspace) {
+        del();
+        return true;
+    }
+    if (key == Qt::Key_Escape) {
+        emit cancelled();
+        return true;
+    }
+    return false;
 }
 
 // ---- 几何 ----
-QRectF SaveLoadUI::boundingRect() const
-{ return QRectF(0, 0, 800, 600); }
-
-QRectF SaveLoadUI::slotRect(int index) const
+QRectF SaveLoadUI::itemRect(int index) const
 {
     int y = START_Y + index * (SLOT_H + SLOT_GAP);
     return QRectF(SLOT_X, y, SLOT_W, SLOT_H);
@@ -122,7 +85,7 @@ QRectF SaveLoadUI::slotRect(int index) const
 
 QString SaveLoadUI::skillSummary(const SurvivalSaveData& d) const
 {
-    if (d.skills.isEmpty()) return "无技能";
+    if (d.skills.isEmpty()) return QStringLiteral("无技能");
     QStringList parts;
     for (const auto& s : d.skills) {
         const SkillData* sd = GameData::instance()->getSkillById(s.first);
@@ -132,35 +95,11 @@ QString SaveLoadUI::skillSummary(const SurvivalSaveData& d) const
     return parts.join("  ");
 }
 
-// ---- 键盘事件 ----
-void SaveLoadUI::keyPressEvent(QKeyEvent* event)
-{
-    if (!m_visible) {
-        QGraphicsItem::keyPressEvent(event);
-        return;
-    }
-
-    int key = event->key();
-    if (key == Qt::Key_Up || key == Qt::Key_W) {
-        prev();
-    } else if (key == Qt::Key_Down || key == Qt::Key_S) {
-        next();
-    } else if (key == Qt::Key_Return || key == Qt::Key_Enter || key == Qt::Key_Space) {
-        confirm();
-    } else if (key == Qt::Key_Delete || key == Qt::Key_Backspace) {
-        del();
-    } else if (key == Qt::Key_Escape) {
-        emit cancelled();
-    } else {
-        QGraphicsItem::keyPressEvent(event);
-    }
-}
-
 // ==================== 绘制 ====================
 void SaveLoadUI::paint(QPainter* painter, const QStyleOptionGraphicsItem*,
                        QWidget*)
 {
-    if (!m_visible) return;
+    if (!isVisible()) return;
 
     // 背景遮罩
     painter->setBrush(QColor(0x12, 0x12, 0x24, 220));
@@ -171,7 +110,7 @@ void SaveLoadUI::paint(QPainter* painter, const QStyleOptionGraphicsItem*,
     painter->setFont(titleFont);
     painter->setPen(QColor(0xff, 0xcc, 0x00));
     QString title = (m_mode == SAVE_MODE)
-                    ? "— 保存游戏 —" : "— 读取存档 —";
+                    ? QStringLiteral("— 保存游戏 —") : QStringLiteral("— 读取存档 —");
     painter->drawText(QRectF(0, 6, 800, 30), Qt::AlignCenter, title);
 
     // 提示
@@ -179,21 +118,26 @@ void SaveLoadUI::paint(QPainter* painter, const QStyleOptionGraphicsItem*,
     painter->setFont(hintFont);
     painter->setPen(QColor(0x66, 0x66, 0x88));
     QString hint = (m_mode == SAVE_MODE)
-        ? "↑↓ / 点击选择   Enter 保存   Esc 返回"
-        : "↑↓ / 点击选择   Enter 读取   Del 删除   Esc 返回";
+        ? QStringLiteral("↑↓ / 点击选择   Enter 保存   Esc 返回")
+        : QStringLiteral("↑↓ / 点击选择   Enter 读取   Del 删除   Esc 返回");
     painter->drawText(QRectF(0, 30, 800, 16), Qt::AlignCenter, hint);
 
     // 绘制5个槽
     for (int i = 0; i < m_slots.size(); ++i) {
-        drawOneSlot(painter, i, slotRect(i), i == m_selectedIndex);
+        drawOneSlot(painter, i, itemRect(i), i == selectedIndex());
     }
 }
 
 void SaveLoadUI::drawOneSlot(QPainter* p, int index, const QRectF& r, bool selected)
 {
     const auto& sp = m_slots[index];
-    QColor bgColor = selected ? QColor(0x2a, 0x30, 0x48) : QColor(0x1a, 0x1e, 0x2e);
-    QColor borderColor = selected ? QColor(0xff, 0xcc, 0x00) : QColor(0x40, 0x48, 0x58);
+    bool disabled = isItemDisabled(index);
+    QColor bgColor = selected ? QColor(0x2a, 0x30, 0x48)
+                   : disabled   ? QColor(0x12, 0x14, 0x1e)
+                   : QColor(0x1a, 0x1e, 0x2e);
+    QColor borderColor = selected ? QColor(0xff, 0xcc, 0x00)
+                       : disabled ? QColor(0x30, 0x34, 0x40)
+                       : QColor(0x40, 0x48, 0x58);
 
     // === 卡片背景 ===
     p->setPen(QPen(borderColor, selected ? 2 : 1));
@@ -207,10 +151,11 @@ void SaveLoadUI::drawOneSlot(QPainter* p, int index, const QRectF& r, bool selec
     if (!sp.occupied) {
         QFont emptyFont("Arial", 12);
         p->setFont(emptyFont);
-        p->setPen(QColor(0x55, 0x55, 0x66));
+        p->setPen(disabled ? QColor(0x40, 0x40, 0x50) : QColor(0x55, 0x55, 0x66));
         p->drawText(QRectF(rx + 32, ry, r.width() - 44, r.height() - 16),
                     Qt::AlignCenter,
-                    m_mode == SAVE_MODE ? "— 点击此处保存 —" : "— 空存档槽 —");
+                    m_mode == SAVE_MODE ? QStringLiteral("— 点击此处保存 —")
+                                        : QStringLiteral("— 空存档槽 —"));
         return;
     }
 
@@ -277,19 +222,16 @@ void SaveLoadUI::drawOneSlot(QPainter* p, int index, const QRectF& r, bool selec
     double hph = 8;
     double hpRatio = qMin(1.0, (double)d.playerHealth / d.playerMaxHealth);
 
-    // HP条底
     p->setPen(Qt::NoPen);
     p->setBrush(QColor(0x33, 0x22, 0x22));
     p->drawRoundedRect(QRectF(hpx, hpy, hpw, hph), 3, 3);
 
-    // HP条值
     QColor hpColor = hpRatio > 0.5 ? QColor(0x44, 0xcc, 0x44)
                    : hpRatio > 0.25 ? QColor(0xcc, 0xaa, 0x22)
                    : QColor(0xcc, 0x44, 0x33);
     p->setBrush(hpColor);
     p->drawRoundedRect(QRectF(hpx, hpy, hpw * hpRatio, hph), 3, 3);
 
-    // HP文字
     QFont hpFont("Arial", 7);
     p->setFont(hpFont);
     p->setPen(QColor(0xaa, 0xaa, 0xbb));
@@ -314,7 +256,6 @@ void SaveLoadUI::drawOneSlot(QPainter* p, int index, const QRectF& r, bool selec
         p->setFont(sFont);
         p->setPen(QColor(0x77, 0x77, 0x99));
         QString skills = skillSummary(d);
-        // 如果太长就截断
         QFontMetrics fm(sFont);
         if (fm.horizontalAdvance(skills) > iw) {
             skills = fm.elidedText(skills, Qt::ElideRight, static_cast<int>(iw));

@@ -2,14 +2,11 @@
 #define MENU_H
 
 #include <QObject>
-#include <QGraphicsItem>
-#include <QRectF>
 #include <QString>
 #include <QList>
-#include <QSet>
-#include <QGraphicsSceneWheelEvent>
+#include "SelectableListBase.h"
 
-class Menu : public QObject, public QGraphicsItem
+class Menu : public SelectableListBase
 {
     Q_OBJECT
 
@@ -24,23 +21,14 @@ public:
     ~Menu();
 
     void setMenuType(MenuType type);
-    void show();
-    void hide();
-    bool isVisible() const;
-    void setItemDisabled(int index, bool disabled);
 
-    // 键盘操作
-    void selectPrevious();
-    void selectNext();
-    void confirmSelection();
+    // 键盘操作 (保留原方法名兼容 GameWindow eventFilter)
+    void selectPrevious() { selectPrev(); }
+    void selectNext()     { SelectableListBase::selectNext(); }
+    void confirmSelection() { confirm(); }
 
-    QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-
-    // 鼠标事件
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
-    void wheelEvent(QGraphicsSceneWheelEvent *event) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+               QWidget *widget) override;
 
 signals:
     void startGame();
@@ -49,22 +37,20 @@ signals:
     void loadGame();
     void quitGame();
 
+protected:
+    QRectF itemRect(int index) const override;
+    void onConfirm() override;
+
 private:
     MenuType m_type;
-    bool m_isVisible;
     QList<QString> m_menuItems;
-    QSet<int>      m_disabledItems;
-    int m_selectedIndex;
 
     // 菜单布局参数
-    const int MENU_X = 300;
-    const int MENU_Y = 200;
-    const int MENU_WIDTH = 200;
-    const int MENU_HEIGHT = 40;
-    const int ITEM_SPACING = 10;
-
-    // 获取菜单项的矩形区域
-    QRectF getItemRect(int index) const;
+    static constexpr int MENU_X      = 300;
+    static constexpr int MENU_Y      = 200;
+    static constexpr int MENU_WIDTH  = 200;
+    static constexpr int MENU_HEIGHT = 40;
+    static constexpr int ITEM_SPACING = 10;
 };
 
 #endif // MENU_H
