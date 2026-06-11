@@ -97,7 +97,7 @@ void CharacterSelectUI::paint(QPainter* painter, const QStyleOptionGraphicsItem*
 
         // 精灵头像
         QRectF avatar(r.left() + 30, r.top() + 16, CARD_W - 60, CARD_W - 60);
-        QPixmap sprite(QString(":/sprites/characters/%1.png").arg(ch.id));
+        QPixmap sprite(QString(":/sprites/characters/%1").arg(ch.id));
         if (!sprite.isNull()) {
             qreal sx = avatar.left() + (avatar.width() - sprite.width()) / 2;
             qreal sy = avatar.top() + (avatar.height() - sprite.height()) / 2;
