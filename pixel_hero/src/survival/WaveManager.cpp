@@ -104,10 +104,10 @@ void WaveManager::spawnEnemy()
     qreal x, y;
     int edge = QRandomGenerator::global()->bounded(4);
     switch (edge) {
-    case 0: x = 0;                     y = QRandomGenerator::global()->bounded(600); break;
-    case 1: x = 800;                   y = QRandomGenerator::global()->bounded(600); break;
-    case 2: x = QRandomGenerator::global()->bounded(800); y = 0;                     break;
-    case 3: x = QRandomGenerator::global()->bounded(800); y = 600;                   break;
+    case 0: x = 0;                     y = QRandomGenerator::global()->bounded(pixel_hero::config::SCREEN_H); break;
+    case 1: x = pixel_hero::config::SCREEN_W;  y = QRandomGenerator::global()->bounded(pixel_hero::config::SCREEN_H); break;
+    case 2: x = QRandomGenerator::global()->bounded(pixel_hero::config::SCREEN_W); y = 0;                     break;
+    case 3: x = QRandomGenerator::global()->bounded(pixel_hero::config::SCREEN_W); y = pixel_hero::config::SCREEN_H; break;
     }
 
     Enemy* enemy = m_enemyFactory.createEnemy(enemyId, x, y);

@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Enemy.h"
+#include "config/GameConfig.h"
 #include <cmath>
 
 Player::Player(QGraphicsItem *parent)
@@ -102,15 +103,15 @@ void Player::setMoveRight(bool v) { m_moveState.moveRight = v; }
 // ---- 升级 ----
 void Player::checkLevelUp()
 {
-    int need = m_level * 80;
+    int need = m_level * pixel_hero::config::EXP_PER_LEVEL_BASE;
     while (m_exp >= need) {
         m_exp -= need;
         m_level++;
-        m_maxHealth += 20;
+        m_maxHealth += pixel_hero::config::LEVEL_HP_BONUS;
         m_health = m_maxHealth;
-        m_attack += 3;
-        m_defense += 2;
-        need = m_level * 80;
+        m_attack += pixel_hero::config::LEVEL_ATK_BONUS;
+        m_defense += pixel_hero::config::LEVEL_DEF_BONUS;
+        need = m_level * pixel_hero::config::EXP_PER_LEVEL_BASE;
     }
 }
 

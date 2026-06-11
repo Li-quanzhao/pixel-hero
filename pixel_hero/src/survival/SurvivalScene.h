@@ -3,10 +3,13 @@
 
 #include <QGraphicsScene>
 #include <QTimer>
+#include <memory>
 #include "SurvivalPlayer.h"
 #include "WaveManager.h"
 #include "UpgradeUI.h"
 #include "SurvivalHUD.h"
+#include "EffectManager.h"
+#include "EnemyManager.h"
 
 struct SurvivalSaveData;
 class SurvivalStats;
@@ -31,7 +34,7 @@ public:
 
     SurvivalPlayer* player() const { return m_player; }
     WaveManager* waveManager() const { return m_waveManager; }
-    int totalKills() const { return m_totalKills; }
+    int totalKills() const { return m_enemyManager->totalKills(); }
     float elapsedTime() const;
 
 signals:
@@ -42,32 +45,25 @@ protected:
     void drawBackground(QPainter* painter, const QRectF& rect) override;
 
 private:
-    SurvivalPlayer*  m_player;
-    WaveManager*     m_waveManager;
-    UpgradeUI*       m_upgradeUI;
-    SurvivalHUD*     m_hud;
-    SurvivalStats*   m_stats;
-    QTimer*          m_gameTimer;
-    bool             m_isPaused;
-    bool             m_isStarted;
-    int              m_totalKills;
+    SurvivalPlayer*  m_player = nullptr;
+    WaveManager*     m_waveManager = nullptr;
+    UpgradeUI*       m_upgradeUI = nullptr;
+    SurvivalHUD*     m_hud = nullptr;
+    SurvivalStats*   m_stats = nullptr;
+    QTimer*          m_gameTimer = nullptr;
+
+    std::unique_ptr<pixel_hero::survival::EffectManager> m_effectManager;
+    std::unique_ptr<pixel_hero::survival::EnemyManager>   m_enemyManager;
+    bool m_isPaused = false;
+    bool m_isStarted = false;
 
     void initScene();
     void updateGame();
-    void cleanupDeadEnemies();
     void onSkillSelected(const QString& skillId);
-    void onSkillSkipped();  // 跳过升级
+    void onSkillSkipped();
     void checkPlayerDeath();
     void autoAttackNearestEnemy();
     void autoCastSkills();
-    QList<class Enemy*> aliveEnemies() const;
-    Enemy* findNearestEnemy() const;
-
-    // 战斗特效
-    void showSlashEffect(QPointF pos);
-    void showFireballEffect(QPointF from, QPointF to);
-    void showLightningEffect(QPointF from, QPointF to);
-    void showFrostNovaEffect(QPointF center, float radius);
 };
 
 #endif // SURVIVALSCENE_H

@@ -34,7 +34,10 @@ SOURCES += \
     src/survival/SurvivalHUD.cpp \
     src/survival/SurvivalPlayer.cpp \
     src/survival/SurvivalStats.cpp \
-    src/survival/EnemyFactory.cpp
+    src/survival/EnemyFactory.cpp \
+    src/survival/EffectManager.cpp \
+    src/survival/EnemyManager.cpp \
+    src/survival/skills/SkillExecutor.cpp
 
 HEADERS += \
     src/GameWindow.h \
@@ -56,7 +59,11 @@ HEADERS += \
     src/survival/SurvivalPlayer.h \
     src/survival/SurvivalStats.h \
     src/survival/SurvivalSaveData.h \
-    src/survival/EnemyFactory.h
+    src/survival/EnemyFactory.h \
+    src/survival/EffectManager.h \
+    src/survival/EnemyManager.h \
+    src/survival/skills/SkillExecutor.h \
+    src/config/GameConfig.h
 
 RESOURCES += \
     resources.qrc
@@ -65,7 +72,9 @@ INCLUDEPATH += src \
                src/entities \
                src/ui \
                src/utils \
-               src/survival
+               src/survival \
+               src/survival/skills \
+               src/config
 
 DESTDIR = bin
 OBJECTS_DIR = build

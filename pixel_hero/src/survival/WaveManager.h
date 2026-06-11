@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QList>
+#include "config/GameConfig.h"
 #include "utils/GameData.h"
 #include "EnemyFactory.h"
 
@@ -44,7 +45,7 @@ private:
     float m_spawnTimer;
     bool  m_isRunning;
 
-    static const int MAX_ALIVE_ENEMIES = 30;
+    static const int MAX_ALIVE_ENEMIES = pixel_hero::config::MAX_ALIVE_ENEMIES;
 
     void advanceWave();
     void spawnEnemy();

@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "Player.h"
+#include "config/GameConfig.h"
 #include <QPainter>
 #include <QTimer>
 #include <cmath>
@@ -116,10 +117,10 @@ void Enemy::flashHit()
     p.setCompositionMode(QPainter::CompositionMode_Source);
     p.drawPixmap(0, 0, m_originalPixmap);
     p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-    p.fillRect(flash.rect(), QColor(255, 255, 255, 180));
+    p.fillRect(flash.rect(), QColor(255, 255, 255, pixel_hero::config::FLASH_ALPHA));
     p.end();
     setPixmap(flash);
-    m_flashTimer = 5;  // ~80ms (5帧 × 16ms/帧)
+    m_flashTimer = pixel_hero::config::FLASH_FRAMES;
 }
 
 void Enemy::update(qreal deltaTime)
