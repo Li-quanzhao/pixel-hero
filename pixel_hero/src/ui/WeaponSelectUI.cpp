@@ -74,11 +74,14 @@ void WeaponSelectUI::paint(QPainter* painter, const QStyleOptionGraphicsItem*,
         painter->setBrush(sel ? QColor(0x35, 0x40, 0x55) : QColor(0x22, 0x28, 0x38));
         painter->drawRoundedRect(r, 10, 10);
 
-        // 武器预览 (图标区域)
+        // 武器预览图标
         QRectF icon(r.left() + 30, r.top() + 18, CARD_W - 60, 90);
-        painter->setPen(Qt::NoPen);
-        painter->setBrush(wp.color);
-        painter->drawRoundedRect(icon, 10, 10);
+        QPixmap wpSprite(QString(":/sprites/weapons/%1.png").arg(wp.id));
+        if (!wpSprite.isNull()) {
+            qreal sx = icon.left() + (icon.width() - wpSprite.width()) / 2;
+            qreal sy = icon.top() + (icon.height() - wpSprite.height()) / 2;
+            painter->drawPixmap(QPointF(sx, sy), wpSprite);
+        }
 
         // 武器名称
         QFont nameFont("Arial", 14, QFont::Bold);

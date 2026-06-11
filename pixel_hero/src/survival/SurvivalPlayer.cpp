@@ -30,10 +30,8 @@ void SurvivalPlayer::applyCharacter(const CharacterConfig& cfg)
 {
     setMaxHealth(cfg.hp); setHealth(cfg.hp);
     setAttack(cfg.atk); setDefense(cfg.def); setSpeed(cfg.spd);
-    // 更新精灵颜色
-    QPixmap pixmap(48, 48);
-    pixmap.fill(cfg.color);
-    setPixmap(pixmap);
+    // 加载角色精灵图
+    setPixmap(QPixmap(QString(":/sprites/characters/%1.png").arg(cfg.id)));
     setOffset(-24, -48);
 }
 

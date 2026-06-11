@@ -7,6 +7,8 @@ CONFIG += c++17
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
+RESOURCES += resources.qrc
+
 # MinGW 16.1.0 compatibility: suppress QT_NEEDS_QMAIN / Qt6EntryPoint
 win32:!win32-msvc* {
     DEFINES -= QT_NEEDS_QMAIN

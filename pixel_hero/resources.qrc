@@ -1,7 +1,21 @@
 <RCC>
-    <qresource prefix="/">
-        <file>resources/data/skills.json</file>
-        <file>resources/data/survival_waves.json</file>
-        <file>resources/data/weapons.json</file>
+    <qresource prefix="/sprites/characters">
+        <file alias="warrior">resources/png/characters/warrior.png</file>
+        <file alias="archer">resources/png/characters/archer.png</file>
+        <file alias="mage">resources/png/characters/mage.png</file>
+    </qresource>
+    <qresource prefix="/sprites/enemies">
+        <file alias="slime">resources/png/enemies/slime.png</file>
+        <file alias="goblin">resources/png/enemies/goblin.png</file>
+        <file alias="skeleton">resources/png/enemies/skeleton.png</file>
+        <file alias="bat">resources/png/enemies/bat.png</file>
+        <file alias="goblin_elite">resources/png/enemies/goblin_elite.png</file>
+        <file alias="dragon">resources/png/enemies/dragon.png</file>
+    </qresource>
+    <qresource prefix="/sprites/weapons">
+        <file alias="short_sword">resources/png/weapons/short_sword.png</file>
+        <file alias="long_sword">resources/png/weapons/long_sword.png</file>
+        <file alias="staff">resources/png/weapons/staff.png</file>
+        <file alias="dagger">resources/png/weapons/dagger.png</file>
     </qresource>
 </RCC>

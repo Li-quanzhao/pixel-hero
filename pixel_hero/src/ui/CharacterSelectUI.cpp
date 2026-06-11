@@ -95,11 +95,14 @@ void CharacterSelectUI::paint(QPainter* painter, const QStyleOptionGraphicsItem*
         painter->setBrush(sel ? QColor(0x35, 0x40, 0x55) : QColor(0x22, 0x28, 0x38));
         painter->drawRoundedRect(r, 10, 10);
 
-        // 颜色预览方块
+        // 精灵头像
         QRectF avatar(r.left() + 30, r.top() + 16, CARD_W - 60, CARD_W - 60);
-        painter->setPen(Qt::NoPen);
-        painter->setBrush(ch.color);
-        painter->drawRoundedRect(avatar, 8, 8);
+        QPixmap sprite(QString(":/sprites/characters/%1.png").arg(ch.id));
+        if (!sprite.isNull()) {
+            qreal sx = avatar.left() + (avatar.width() - sprite.width()) / 2;
+            qreal sy = avatar.top() + (avatar.height() - sprite.height()) / 2;
+            painter->drawPixmap(QPointF(sx, sy), sprite);
+        }
 
         // 名称
         QFont nameFont("Arial", 13, QFont::Bold);

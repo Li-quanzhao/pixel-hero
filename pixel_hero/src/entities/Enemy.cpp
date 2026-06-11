@@ -17,42 +17,42 @@ Enemy::Enemy(EnemyType type, QGraphicsItem *parent)
         m_expReward = 20; m_goldReward = 10;
         m_moveSpeed = 1.5; m_attackInterval = 0.8;
         m_attackRange = 40;
-        enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0x8b, 0x45, 0x13));
+        enemyPixmap = QPixmap(":/sprites/enemies/goblin");
         break;
     case SLIME:
         m_maxHealth = 20; m_attack = 5; m_defense = 1;
         m_expReward = 10; m_goldReward = 5;
         m_moveSpeed = 1.0; m_attackInterval = 1.0;
         m_attackRange = 35;
-        enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0x22, 0x8b, 0x22));
+        enemyPixmap = QPixmap(":/sprites/enemies/slime");
         break;
     case SKELETON:
         m_maxHealth = 80; m_attack = 12; m_defense = 5;
         m_expReward = 35; m_goldReward = 20;
         m_moveSpeed = 1.2; m_attackInterval = 0.7;
         m_attackRange = 45;
-        enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0xc0, 0xc0, 0xc0));
+        enemyPixmap = QPixmap(":/sprites/enemies/skeleton");
         break;
     case BAT:
         m_maxHealth = 15; m_attack = 15; m_defense = 0;
         m_expReward = 25; m_goldReward = 12;
         m_moveSpeed = 3.0; m_attackInterval = 0.5;
         m_attackRange = 35;
-        enemyPixmap = QPixmap(40, 40); enemyPixmap.fill(QColor(0x4b, 0x00, 0x82));
+        enemyPixmap = QPixmap(":/sprites/enemies/bat");
         break;
     case GOBLIN_ELITE:
         m_maxHealth = 200; m_attack = 20; m_defense = 10;
         m_expReward = 80; m_goldReward = 40;
         m_moveSpeed = 1.0; m_attackInterval = 1.0;
         m_attackRange = 48;
-        enemyPixmap = QPixmap(48, 48); enemyPixmap.fill(QColor(0xff, 0x44, 0x00));
+        enemyPixmap = QPixmap(":/sprites/enemies/goblin_elite");
         break;
     case DRAGON:
         m_maxHealth = 500; m_attack = 30; m_defense = 20;
         m_expReward = 300; m_goldReward = 100;
         m_moveSpeed = 0.6; m_attackInterval = 1.0;
         m_attackRange = 55;
-        enemyPixmap = QPixmap(64, 64); enemyPixmap.fill(QColor(0xcc, 0x00, 0x00));
+        enemyPixmap = QPixmap(":/sprites/enemies/dragon");
         break;
     }
 
