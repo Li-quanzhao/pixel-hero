@@ -24,6 +24,7 @@ public:
 
 signals:
     void skillSelected(const QString& skillId);
+    void skillSkipped();  // Esc跳过/取消升级
 
 protected:
     QRectF itemRect(int index) const override;

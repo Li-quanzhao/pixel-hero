@@ -245,15 +245,25 @@ void GameWindow::showGameOverMenu(int wave, int kills, float time, bool isNewRec
     int sec = static_cast<int>(time);
     int m = sec / 60;
     int s = sec % 60;
-    QString msg = QString("存活时间: %1:%2\n波次: %3\n击杀: %4")
+    QString stats = QString("存活时间: %1:%2\n波次: %3    击杀: %4")
         .arg(m, 2, 10, QChar('0')).arg(s, 2, 10, QChar('0'))
         .arg(wave).arg(kills);
 
-    if (isNewRecord) msg += "\n\n新纪录！";
-    msg += "\n战绩: 最高波次 " + QString::number(m_stats->recordWave());
+    if (isNewRecord) stats += "\n新纪录！";
+    stats += "\n最高波次: " + QString::number(m_stats->recordWave());
 
-    QMessageBox::information(this, "游戏结束", msg);
-    showMainMenu();
+    m_menu = new Menu(Menu::GAME_OVER_MENU);
+    m_menu->setGameOverStats(stats);
+    m_survivalScene->addItem(m_menu);
+    m_menu->appear();
+    m_view->viewport()->update();
+
+    connect(m_menu, &Menu::startGame, this, [this]() {
+        hideMenu();
+        showCharacterSelect();
+    });
+    connect(m_menu, &Menu::quitGame, this, [this]() { showMainMenu(); });
+    setFocus();
 }
 
 void GameWindow::hideMenu()

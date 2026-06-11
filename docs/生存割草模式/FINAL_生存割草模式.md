@@ -1,7 +1,7 @@
 # 生存割草模式 — FINAL 项目总结报告
 
 **项目**: 像素勇者 (Pixel Hero Adventure)
-**文档版本**: FINAL V3.1
+**文档版本**: FINAL V3.2
 **日期**: 2026-06-11
 **阶段**: 阶段6 — 评估阶段 (Assess)
 
@@ -171,8 +171,8 @@ main.cpp
 |:--:|:--:|------|:--:|
 | P0 | 1 | UpgradeUI 的 A/S/D 键映射与 WASD 移动冲突 | ✅ 已修复 |
 | P0 | 2 | 各界面鼠标确认行为不一致 | ✅ 已修复 |
-| P1 | 1 | GameOver 使用原生 QMessageBox | ⏳ 待处理 |
-| P1 | 2 | UpgradeUI 无法跳过/取消 | ⏳ 待处理 |
+| P1 | 1 | GameOver 使用原生 QMessageBox | ✅ V3.2 自绘 Menu 替代 |
+| P1 | 2 | UpgradeUI 无法跳过/取消 | ✅ V3.2 Esc 跳过 |
 | P1 | 3 | 导航键方向不统一 | ✅ P0-1修复后自然解决 |
 | P1 | 4 | SaveLoadUI 空槽静默失败 | ✅ V3.1 基类重构顺带修复 |
 
@@ -282,6 +282,34 @@ main.cpp
 
 ---
 
+### V3.2 P1 修复 (2026-06-11)
+
+#### P1-1: GameOver 自绘替代 QMessageBox
+
+**文件**: `src/ui/Menu.h/cpp`, `src/GameWindow.cpp`
+
+**问题**: GameOver 使用 Windows 原生 `QMessageBox::information`，撕裂像素风沉浸感。
+
+**修复**: Menu 新增 `setGameOverStats()` + `m_statsText`，GAME_OVER 模式下在菜单上方绘制统计数据。GameWindow 改为创建 Menu(GAME_OVER_MENU) 替代 QMessageBox。
+
+#### P1-2: UpgradeUI Esc 跳过
+
+**文件**: `src/survival/UpgradeUI.h/cpp`, `src/survival/SurvivalScene.h/cpp`
+
+**问题**: 升级UI弹出后必须选择技能，无法取消。
+
+**修复**: UpgradeUI 新增 `skillSkipped()` 信号，Esc 键触发。SurvivalScene 连接后：隐藏UI → 仍应用属性加成 → 恢复游戏（不选技能也能获得升级基础属性）。
+
+#### P1-4: 升级过渡动画
+
+**文件**: `src/survival/SurvivalHUD.h/cpp`, `src/survival/SurvivalScene.cpp`
+
+**问题**: 战斗中突然冻结弹出升级UI，玩家不知发生了什么。
+
+**修复**: 升级时先在 HUD 中央显示 "LEVEL UP!" 金色横幅（带发光描边效果），0.6秒后再弹出 UpgradeUI。
+
+---
+
 ## 十、构建命令
 
 ```powershell
@@ -302,4 +330,4 @@ main.cpp
 
 ---
 
-**文档状态**: ✅ V3.1 — P0 已修复 + 基类重构完成，P1 部分修复
+**文档状态**: ✅ V3.2 — P0 + P1 全部修复，界面交互统一

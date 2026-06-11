@@ -2,7 +2,7 @@
 
 **项目**: 像素勇者 (Pixel Hero Adventure)
 **日期**: 2026-06-11
-**版本**: V3.1
+**版本**: V3.2
 
 ---
 
@@ -16,14 +16,16 @@
 | P0-2 | 各界面确认行为不一致 | UpgradeUI 改为"单击选中+再次点击/Enter确认" |
 | — | 5个UI组件交互逻辑重复500行 | 抽取 SelectableListBase 公共基类 |
 
-### P1 (部分修复)
+### P1 (全部已修复)
 
 | 编号 | 问题 | 状态 |
 |:--:|------|:--:|
-| P1-1 | GameOver 使用原生 QMessageBox | ⏳ 待处理 |
-| P1-2 | UpgradeUI 无法跳过/取消 | ⏳ 待处理 |
-| P1-3 | SaveLoadUI 空槽静默失败 | ✅ 基类重构顺带修复(空槽自动禁用) |
-| P1-4 | 升级界面暂停无过渡提示 | ⏳ 待处理 |
+| P1-1 | GameOver 使用原生 QMessageBox | ✅ Menu 自绘替代 |
+| P1-2 | UpgradeUI 无法跳过/取消 | ✅ Esc 跳过(via handleExtraKey) |
+| P1-3 | SaveLoadUI 空槽静默失败 | ✅ 空槽自动禁用 |
+| P1-4 | 升级界面暂停无过渡提示 | ✅ "LEVEL UP!" 金色横幅过渡动画 |
+
+**grill-me 审查问题全部修复，无已知缺陷。**
 
 ---
 

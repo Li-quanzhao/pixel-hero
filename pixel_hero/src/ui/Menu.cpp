@@ -19,6 +19,7 @@ void Menu::setMenuType(MenuType type)
 {
     m_type = type;
     m_menuItems.clear();
+    m_statsText.clear();
 
     switch (type) {
     case MAIN_MENU:
@@ -32,6 +33,11 @@ void Menu::setMenuType(MenuType type)
         break;
     }
     setItemCount(3);
+}
+
+void Menu::setGameOverStats(const QString& statsText)
+{
+    m_statsText = statsText;
 }
 
 QRectF Menu::itemRect(int index) const
@@ -97,6 +103,15 @@ void Menu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
 
     painter->drawText(MENU_X + (MENU_WIDTH - painter->fontMetrics().horizontalAdvance(title)) / 2,
                       MENU_Y - 35, title);
+
+    // GAME_OVER模式: 显示统计数据
+    if (m_type == GAME_OVER_MENU && !m_statsText.isEmpty()) {
+        QFont statsFont("Arial", 13);
+        painter->setFont(statsFont);
+        painter->setPen(QColor(0xdd, 0xdd, 0xdd));
+        QRectF statsRect(MENU_X - 60, MENU_Y - 20, MENU_WIDTH + 120, 100);
+        painter->drawText(statsRect, Qt::AlignHCenter | Qt::AlignTop, m_statsText);
+    }
 
     // 菜单项
     painter->setFont(QFont("Arial", 14));

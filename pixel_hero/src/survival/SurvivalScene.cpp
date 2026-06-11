@@ -50,6 +50,7 @@ void SurvivalScene::initScene()
 
     // 技能选择信号
     connect(m_upgradeUI, &UpgradeUI::skillSelected, this, &SurvivalScene::onSkillSelected);
+    connect(m_upgradeUI, &UpgradeUI::skillSkipped, this, &SurvivalScene::onSkillSkipped);
 
     // 升级检测：在 updateGame 中轮询
 }
@@ -226,10 +227,14 @@ void SurvivalScene::updateGame()
     // 9. HUD更新
     m_hud->updateHUD();
 
-    // 10. 检测升级（攒到 pending，弹升级UI）
+    // 10. 检测升级（攒到 pending，先展示横幅再弹升级UI）
     if (m_player->pendingLevelUps() > 0 && !m_upgradeUI->isVisible()) {
         pauseGame();
-        emit levelUp(m_player->level());
+        m_hud->setShowLevelUpBanner(true);
+        QTimer::singleShot(600, this, [this]() {
+            m_hud->setShowLevelUpBanner(false);
+            emit levelUp(m_player->level());
+        });
     }
 }
 
@@ -348,6 +353,14 @@ void SurvivalScene::onSkillSelected(const QString& skillId)
     // 应用本次升级的属性加成
     m_player->applyPendingLevelUp();
     m_upgradeUI->hide();
+    resumeGame();
+}
+
+void SurvivalScene::onSkillSkipped()
+{
+    if (!m_player) return;
+    // 跳过升级，但仍应用属性加成
+    m_player->applyPendingLevelUp();
     resumeGame();
 }
 

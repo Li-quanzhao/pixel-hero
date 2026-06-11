@@ -21,6 +21,7 @@ public:
     ~Menu();
 
     void setMenuType(MenuType type);
+    void setGameOverStats(const QString& statsText);  // GAME_OVER模式显示统计数据
 
     // 键盘操作 (保留原方法名兼容 GameWindow eventFilter)
     void selectPrevious() { selectPrev(); }
@@ -44,6 +45,7 @@ protected:
 private:
     MenuType m_type;
     QList<QString> m_menuItems;
+    QString  m_statsText;  // GAME_OVER模式统计数据
 
     // 菜单布局参数
     static constexpr int MENU_X      = 300;

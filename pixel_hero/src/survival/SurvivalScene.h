@@ -56,6 +56,7 @@ private:
     void updateGame();
     void cleanupDeadEnemies();
     void onSkillSelected(const QString& skillId);
+    void onSkillSkipped();  // 跳过升级
     void checkPlayerDeath();
     void autoAttackNearestEnemy();
     void autoCastSkills();

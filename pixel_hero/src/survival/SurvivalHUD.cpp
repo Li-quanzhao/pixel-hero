@@ -117,4 +117,19 @@ void SurvivalHUD::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWid
     painter->setPen(QColor(120, 120, 120));
     painter->drawText(QRectF(0, 565, 800, 30), Qt::AlignCenter,
                       "WASD移动 | 自动攻击临近敌人 | ESC暂停");
+
+    // ===== 升级横幅 =====
+    if (m_showLevelUpBanner) {
+        QFont bannerFont;
+        bannerFont.setPixelSize(48);
+        bannerFont.setBold(true);
+        painter->setFont(bannerFont);
+
+        // 发光效果(描边)
+        painter->setPen(QPen(QColor(0xff, 0xcc, 0x00, 180), 3));
+        painter->drawText(QRectF(0, 220, 800, 60), Qt::AlignCenter, "LEVEL UP!");
+
+        painter->setPen(QColor(0xff, 0xdd, 0x44));
+        painter->drawText(QRectF(0, 220, 800, 60), Qt::AlignCenter, "LEVEL UP!");
+    }
 }

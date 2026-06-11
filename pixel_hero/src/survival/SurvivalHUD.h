@@ -18,6 +18,7 @@ public:
 
     void bind(SurvivalPlayer* player, WaveManager* waveManager);
     void updateHUD();
+    void setShowLevelUpBanner(bool show) { m_showLevelUpBanner = show; update(); }
 
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
@@ -37,6 +38,7 @@ private:
     int     m_kills;
     int     m_timeSeconds;
     QStringList m_activeSkillNames;
+    bool    m_showLevelUpBanner = false;
 };
 
 #endif // SURVIVALHUD_H

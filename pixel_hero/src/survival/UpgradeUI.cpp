@@ -41,6 +41,7 @@ bool UpgradeUI::handleExtraKey(int key)
     case Qt::Key_1: if (0 < m_options.size()) { setSelectedIndex(0); confirm(); } return true;
     case Qt::Key_2: if (1 < m_options.size()) { setSelectedIndex(1); confirm(); } return true;
     case Qt::Key_3: if (2 < m_options.size()) { setSelectedIndex(2); confirm(); } return true;
+    case Qt::Key_Escape: hide(); emit skillSkipped(); return true;
     default: return false;
     }
 }
