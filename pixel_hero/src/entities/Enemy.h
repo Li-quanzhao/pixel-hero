@@ -36,6 +36,7 @@ public:
     void setAttackRange(float v);
 
     void takeDamage(int damage);
+    void flashHit();  // 受伤闪烁
     void update(qreal deltaTime);
     void updateAI(Player* player, QList<Enemy*> otherEnemies, qreal deltaTime);
     bool isAlive() const;
@@ -56,6 +57,8 @@ private:
 
     qreal m_attackTimer;
     qreal m_attackInterval;
+
+    QPixmap m_originalPixmap;  // 原始精灵图(受伤闪烁恢复用)
 };
 
 #endif // ENEMY_H

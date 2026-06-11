@@ -62,6 +62,12 @@ private:
     void autoCastSkills();
     QList<class Enemy*> aliveEnemies() const;
     Enemy* findNearestEnemy() const;
+
+    // 战斗特效
+    void showSlashEffect(QPointF pos);
+    void showFireballEffect(QPointF from, QPointF to);
+    void showLightningEffect(QPointF from, QPointF to);
+    void showFrostNovaEffect(QPointF center, float radius);
 };
 
 #endif // SURVIVALSCENE_H

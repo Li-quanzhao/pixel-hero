@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include "Player.h"
 #include <QPainter>
+#include <QTimer>
 #include <cmath>
 
 Enemy::Enemy(EnemyType type, QGraphicsItem *parent)
@@ -57,6 +58,7 @@ Enemy::Enemy(EnemyType type, QGraphicsItem *parent)
     }
 
     setPixmap(enemyPixmap);
+    m_originalPixmap = enemyPixmap;  // 保存原始精灵图
     m_health = m_maxHealth;
     setOffset(-boundingRect().width() / 2, -boundingRect().height());
 }
@@ -100,6 +102,25 @@ void Enemy::takeDamage(int damage)
     int finalDamage = qMax(0, damage - m_defense);
     m_health -= finalDamage;
     if (m_health > 0) m_state = CHASE;
+    flashHit();
+}
+
+void Enemy::flashHit()
+{
+    // 生成白色闪烁精灵图
+    QPixmap flash(m_originalPixmap.size());
+    flash.fill(Qt::transparent);
+    QPainter p(&flash);
+    p.setCompositionMode(QPainter::CompositionMode_Source);
+    p.drawPixmap(0, 0, m_originalPixmap);
+    p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    p.fillRect(flash.rect(), QColor(255, 255, 255, 180));
+    p.end();
+    setPixmap(flash);
+    // 80ms后恢复
+    QTimer::singleShot(80, [this]() {
+        if (isAlive()) setPixmap(m_originalPixmap);
+    });
 }
 
 void Enemy::update(qreal deltaTime)

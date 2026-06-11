@@ -243,6 +243,7 @@ void SurvivalScene::autoAttackNearestEnemy()
     Enemy* target = findNearestEnemy();
     if (target) {
         m_player->attackEnemy(target);
+        showSlashEffect(target->pos());
     }
 }
 
@@ -291,10 +292,12 @@ void SurvivalScene::autoCastSkills()
                 qreal d = QLineF(pp, e->pos()).length();
                 if (d < nd) { nd = d; nearest = e; }
             }
-            if (nearest) nearest->takeDamage(as.damage);
+            if (nearest) {
+                showFireballEffect(pp, nearest->pos());
+                nearest->takeDamage(as.damage);
+            }
         } else if (as.skillId == "lightning") {
             // 连锁攻击
-            // 按距离排序
             struct ED { Enemy* e; qreal d; };
             QList<ED> sorted;
             for (Enemy* e : enemies) {
@@ -302,11 +305,15 @@ void SurvivalScene::autoCastSkills()
             }
             std::sort(sorted.begin(), sorted.end(), [](const ED& a, const ED& b) { return a.d < b.d; });
             int chain = qMin(as.extra, sorted.size());
+            QPointF prevPos = pp;
             for (int i = 0; i < chain; i++) {
                 sorted[i].e->takeDamage(as.damage);
+                showLightningEffect(prevPos, sorted[i].e->pos());
+                prevPos = sorted[i].e->pos();
             }
         } else if (as.skillId == "frost_nova") {
             // 范围伤害
+            showFrostNovaEffect(pp, as.extra);
             for (Enemy* e : enemies) {
                 qreal d = QLineF(pp, e->pos()).length();
                 if (d <= as.extra) e->takeDamage(as.damage);
@@ -362,6 +369,77 @@ void SurvivalScene::onSkillSkipped()
     // 跳过升级，但仍应用属性加成
     m_player->applyPendingLevelUp();
     resumeGame();
+}
+
+// ========================= 战斗特效 =========================
+
+void SurvivalScene::showSlashEffect(QPointF pos)
+{
+    // 白色挥砍弧线
+    auto* slash = addEllipse(-8, -8, 16, 16, QPen(QColor(255, 255, 200, 200), 2),
+                             QBrush(QColor(255, 255, 255, 80)));
+    slash->setPos(pos);
+    QTimer::singleShot(150, this, [this, slash]() { removeItem(slash); delete slash; });
+}
+
+void SurvivalScene::showFireballEffect(QPointF from, QPointF to)
+{
+    // 橙色火球弹道 (多个小圆组成轨迹)
+    QLineF line(from, to);
+    int steps = 5;
+    for (int i = 1; i <= steps; ++i) {
+        QPointF p = line.pointAt(i / qreal(steps));
+        auto* orb = addEllipse(-3, -3, 6, 6, Qt::NoPen,
+                               QBrush(QColor(255, 136 + i * 20, 0, 180)));
+        orb->setPos(p);
+        QTimer::singleShot(100 + i * 40, this, [this, orb]() { removeItem(orb); delete orb; });
+    }
+    // 撞击点火花
+    auto* hit = addEllipse(-6, -6, 12, 12, Qt::NoPen,
+                           QBrush(QColor(255, 200, 0, 200)));
+    hit->setPos(to);
+    QTimer::singleShot(200, this, [this, hit]() { removeItem(hit); delete hit; });
+}
+
+void SurvivalScene::showLightningEffect(QPointF from, QPointF to)
+{
+    // 蓝白闪电锯齿线
+    QPainterPath path;
+    path.moveTo(from);
+    QLineF line(from, to);
+    qreal len = line.length();
+    int segs = qMax(2, int(len / 20));
+    for (int i = 1; i <= segs; ++i) {
+        qreal t = i / qreal(segs);
+        QPointF p = line.pointAt(t);
+        qreal jitterX = (i % 2 == 0 ? 6 : -6);
+        qreal jitterY = (QRandomGenerator::global()->bounded(8) - 4);
+        path.lineTo(p + QPointF(jitterX, jitterY));
+    }
+    auto* bolt = addPath(path, QPen(QColor(100, 180, 255, 220), 2),
+                         QBrush(Qt::NoBrush));
+    // 外层辉光
+    auto* glow = addPath(path, QPen(QColor(150, 210, 255, 100), 4),
+                         QBrush(Qt::NoBrush));
+    QTimer::singleShot(250, this, [this, bolt, glow]() {
+        removeItem(bolt); delete bolt;
+        removeItem(glow); delete glow;
+    });
+}
+
+void SurvivalScene::showFrostNovaEffect(QPointF center, float /*radius*/)
+{
+    // 冰蓝扩散环
+    auto* ring = addEllipse(center.x() - 5, center.y() - 5, 10, 10,
+                            QPen(QColor(100, 200, 255, 200), 3),
+                            QBrush(Qt::NoBrush));
+    auto* ring2 = addEllipse(center.x() - 30, center.y() - 30, 60, 60,
+                             QPen(QColor(80, 180, 240, 120), 2),
+                             QBrush(Qt::NoBrush));
+    QTimer::singleShot(350, this, [this, ring, ring2]() {
+        removeItem(ring); delete ring;
+        removeItem(ring2); delete ring2;
+    });
 }
 
 void SurvivalScene::drawBackground(QPainter* painter, const QRectF& rect)
