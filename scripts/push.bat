@@ -31,8 +31,8 @@ if errorlevel 1 (
     echo git commit FAILED or nothing to commit.
 )
 
-echo [3/3] Pushing to origin...
-git push origin master
+echo [3/3] Pushing to origin/main...
+git push origin HEAD:main
 if errorlevel 1 (
     echo [警告] git push FAILED! 请检查网络或远程仓库配置。
     pause
